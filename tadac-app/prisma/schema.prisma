@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,23 +10,376 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Day 1 minimal schema — more models added Day 2+
+// ─────────────────────────────────────────────────────────────────────────────
+// USER & SETTINGS
+// ─────────────────────────────────────────────────────────────────────────────
 
 model User {
-  id        String    @id @default(cuid())
-  name      String    @default("User")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  settings  Setting?
+  id        String   @id @default(cuid())
+  name      String   @default("Parth")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  settings            Setting?
+  tasks               Task[]
+  focusSessions       FocusSession[]
+  revisionItems       RevisionItem[]
+  interviewAttempts   InterviewAttempt[]
+  projectProgress     ProjectStageProgress[]
+  rewards             Reward[]
+  journalEntries      JournalEntry[]
+  xpEvents            XpEvent[]
 }
 
 model Setting {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  theme     String   @default("auto") // "day" | "night" | "auto"
-  timezone  String   @default("Asia/Kolkata")
-  quote     Boolean  @default(true)
+  id       String @id @default(cuid())
+  userId   String @unique
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Appearance
+  theme    String @default("auto")   // "day" | "night" | "auto"
+  timezone String @default("Asia/Kolkata")
+
+  // Focus presets (JSON stored as String for SQLite compatibility)
+  focusPreset      String @default("25/5")  // "25/5" | "50/10" | "60/10" | "90/20" | "custom"
+  customFocusMins  Int    @default(25)
+  customShortBreak Int    @default(5)
+  customLongBreak  Int    @default(15)
+  customCycles     Int    @default(4)
+
+  // Behaviour
+  autoStartBreak   Boolean @default(false)
+  autoStartFocus   Boolean @default(false)
+  quoteEnabled     Boolean @default(true)
+  quoteCategories  String  @default("stoic,discipline,focus") // comma-separated
+
+  // XP values (configurable per PRD 5.11)
+  xpFocusSession   Int @default(30)
+  xpTask           Int @default(10)
+  xpInterview      Int @default(10)
+  xpRevision       Int @default(15)
+  xpProjectMilestone Int @default(50)
+  xpDailyPlanning  Int @default(10)
+  xpJournal        Int @default(10)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLANNER — TASKS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Task {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title           String
+  description     String   @default("")
+  scheduledDate   String   // ISO date string YYYY-MM-DD (date-only, timezone handled client-side)
+  scheduledTime   String?  // "HH:MM" optional
+  priority        String   @default("medium") // "high" | "medium" | "low"
+  category        String   @default("Other")  // Development | DSA | College | Interview | Revision | Personal | Other
+  estimatedMins   Int?
+  deadline        String?  // ISO date string
+  completed       Boolean  @default(false)
+  completedAt     DateTime?
+  sortOrder       Int      @default(0)
+
+  // XP tracking — prevent double-award
+  xpAwarded       Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  focusSessions   FocusSession[]
+
+  @@index([userId, scheduledDate])
+  @@index([userId, completed])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FOCUS SESSIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model FocusSession {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  taskId      String?
+  task        Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  preset      String   @default("25/5")   // "25/5" | "50/10" | "60/10" | "90/20" | "custom"
+  sessionType String   @default("focus")  // "focus" | "short_break" | "long_break"
+  category    String   @default("Other")
+
+  plannedMins Int
+  actualMins  Int      @default(0)        // real focus time, avoids double-counting
+
+  status      String   @default("active") // "active" | "completed" | "stopped"
+
+  startedAt   DateTime @default(now())
+  endedAt     DateTime?
+
+  // XP tracking
+  xpAwarded   Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId, startedAt])
+  @@index([userId, status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REVISION ENGINE — CRITICAL FEATURE
+// ─────────────────────────────────────────────────────────────────────────────
+
+model RevisionItem {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  topic       String
+  notes       String   @default("")
+  source      String   @default("")  // source/reference URL or text
+  category    String   @default("Other")
+  tags        String   @default("")  // comma-separated
+
+  // Day 0 anchor — ALL checkpoint dates are computed from this
+  // Stored as YYYY-MM-DD string to avoid UTC drift issues (timezone-safe)
+  learnedAt   String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  checkpoints RevisionCheckpoint[]
+
+  // Prevent duplicate items for same topic + learned date
+  @@unique([userId, topic, learnedAt])
+  @@index([userId])
+}
+
+model RevisionCheckpoint {
+  id             String @id @default(cuid())
+
+  revisionItemId String
+  revisionItem   RevisionItem @relation(fields: [revisionItemId], references: [id], onDelete: Cascade)
+
+  // Sequence: 1=Day1, 2=Day3, 3=Day7, 4=Day15, 5=Day30
+  sequence       Int
+  intervalDays   Int    // 1 | 3 | 7 | 15 | 30
+
+  // Stored as YYYY-MM-DD — derived from learnedAt + intervalDays at creation
+  dueDate        String
+
+  status         String    @default("PENDING") // "PENDING" | "COMPLETED"
+  completedAt    DateTime?
+
+  // XP tracking — idempotent
+  xpAwarded      Boolean   @default(false)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // One checkpoint per sequence per revision item only
+  @@unique([revisionItemId, sequence])
+  @@index([revisionItemId])
+  // Fast lookup of "what is due today" across all users
+  @@index([dueDate, status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INTERVIEW ENGINE
+// ─────────────────────────────────────────────────────────────────────────────
+
+model InterviewQuestion {
+  id          String @id @default(cuid())
+
+  topic       String  // DSA | C++ | OOP | DBMS | OS | CN | JavaScript | Backend | SQL | APIs | Aptitude | ...
+  subTopic    String  @default("")
+  difficulty  String  @default("medium") // "easy" | "medium" | "hard"
+  format      String  @default("mcq")    // "mcq" | "true_false" | "short_answer"
+
+  question    String
+  // For MCQ: JSON array string e.g. '["A","B","C","D"]'
+  options     String  @default("[]")
+  answer      String  // Correct answer text or option letter
+  explanation String  @default("")
+
+  tags        String  @default("") // comma-separated
+
+  active      Boolean @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  attempts    InterviewAttempt[]
+
+  @@index([topic, active])
+  @@index([difficulty])
+}
+
+model InterviewAttempt {
+  id         String @id @default(cuid())
+  userId     String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  questionId String
+  question   InterviewQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  // The date this attempt counted toward (YYYY-MM-DD) — for daily grouping
+  attemptDate String
+
+  userAnswer  String
+  correct     Boolean
+
+  // XP tracking
+  xpAwarded   Boolean  @default(false)
+
+  attemptedAt DateTime @default(now())
+
+  // Only one attempt per question per day (idempotent daily practice)
+  @@unique([userId, questionId, attemptDate])
+  @@index([userId, attemptDate])
+  @@index([userId, questionId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROJECT LIBRARY
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Project {
+  id          String @id @default(cuid())
+
+  name        String
+  description String @default("")
+  difficulty  String @default("intermediate") // "beginner" | "intermediate" | "advanced"
+  durationEst String @default("")             // e.g. "2–4 weeks"
+  stack       String @default("")             // comma-separated: "Node.js,PostgreSQL,Redis"
+  categories  String @default("")             // comma-separated
+  whatYouLearn String @default("")
+  prerequisites String @default("")
+  resources   String @default("")             // JSON stringified array of {title, url}
+
+  active      Boolean @default(true)
+
+  stages      ProjectStage[]
+  userProgress ProjectStageProgress[]
+
+  @@index([difficulty, active])
+}
+
+model ProjectStage {
+  id          String @id @default(cuid())
+  projectId   String
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  sequence    Int
+  title       String
+  description String @default("")
+  resources   String @default("") // JSON stringified
+
+  progress    ProjectStageProgress[]
+
+  @@unique([projectId, sequence])
+  @@index([projectId])
+}
+
+model ProjectStageProgress {
+  id       String @id @default(cuid())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  stageId   String
+  stage     ProjectStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  status    String   @default("NOT_STARTED") // "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"
+  startedAt DateTime?
+  completedAt DateTime?
+
+  // XP tracking
+  xpAwarded Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, stageId])
+  @@index([userId, projectId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REWARDS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Reward {
+  id          String @id @default(cuid())
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String @default("")
+  requirement String @default("") // Human-readable condition e.g. "3h focus today"
+  redeemed    Boolean  @default(false)
+  redeemedAt  DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// JOURNAL
+// ─────────────────────────────────────────────────────────────────────────────
+
+model JournalEntry {
+  id          String @id @default(cuid())
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Journal date as YYYY-MM-DD — one entry per day
+  entryDate   String
+
+  wentWell    String @default("")
+  wentBadly   String @default("")
+  learned     String @default("")
+  improveTomorrow String @default("")
+
+  // Tomorrow plan (up to 3 priorities stored as JSON array string)
+  tomorrowPriorities String @default("[]")
+  tomorrowExtras     String @default("[]")
+
+  // XP tracking
+  xpAwarded Boolean @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, entryDate])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// XP EVENTS — immutable log for auditing, prevents double-award
+// ─────────────────────────────────────────────────────────────────────────────
+
+model XpEvent {
+  id         String @id @default(cuid())
+  userId     String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  amount     Int
+  reason     String // "focus_session" | "task" | "revision" | "interview" | "project_stage" | "journal" | "planning"
+  sourceId   String // ID of the source record (FocusSession.id, Task.id, etc.)
+
+  earnedAt   DateTime @default(now())
+
+  // Idempotency: one XP event per source
+  @@unique([userId, reason, sourceId])
+  @@index([userId, earnedAt])
 }
