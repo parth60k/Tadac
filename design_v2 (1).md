@@ -35,7 +35,7 @@ It should NOT feel like:
 - a literal RPG
 - a game HUD
 - a fantasy game menu
-- an over-animated productivity app
+- an over-animated productivity App
 
 ---
 
