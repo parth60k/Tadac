@@ -1,27 +1,22 @@
 import type { Metadata } from 'next';
-import Panel from '@/components/ui/Panel';
-import { MessageSquare } from 'lucide-react';
+import { getDailyQuestions } from '@/app/actions/interview';
+import InterviewClient from './InterviewClient';
 
 export const metadata: Metadata = {
-  title: 'Interview',
-  description: 'Daily interview practice questions covering DSA, OOP, DBMS, OS, aptitude, and more.',
+  title: 'Daily Practice',
+  description: '5 Daily Interview Questions to keep you sharp.',
 };
 
-export default function InterviewPage() {
-  return (
-    <div className="page-wrapper">
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 24, color: 'var(--text-primary)' }}>
-        Interview
-      </h1>
-      <Panel padding="lg" style={{ textAlign: 'center' }}>
-        <MessageSquare size={48} color="var(--info)" strokeWidth={1.5} style={{ margin: '0 auto 16px' }} />
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
-          Daily Interview Questions — coming Day 8
-        </p>
-        <p style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', marginTop: 8 }}>
-          5 curated questions per day. MCQ, true/false, and short answer formats.
-        </p>
-      </Panel>
-    </div>
-  );
+export default async function InterviewPage() {
+  const data = await getDailyQuestions();
+  
+  if (!data.success) {
+    return (
+      <div className="page-wrapper">
+        <p style={{ color: 'var(--due)' }}>Failed to load daily questions.</p>
+      </div>
+    );
+  }
+
+  return <InterviewClient initialData={data.data} />;
 }

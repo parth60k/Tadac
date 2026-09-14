@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { withErrorHandling, Errors, assertDateString } from '@/lib/errors';
 import { todayDate, computeRevisionSchedule, addDays } from '@/lib/date';
 import type { Category } from '@/types/domain';
@@ -101,6 +102,54 @@ export async function markCheckpointRevised(checkpointId: string) {
     revalidatePath('/revision');
     revalidatePath('/');
     return updated;
+  });
+}
+
+
+// ─── Edit learned date (cascading schedule recalculation) ──────────────────────
+
+export async function updateRevisionLearnedDate(itemId: string, newLearnedAt: string) {
+  return withErrorHandling(async () => {
+    assertDateString(newLearnedAt, 'newLearnedAt');
+    
+    // We do this in a transaction to ensure atomic update of the item and its checkpoints
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const item = await tx.revisionItem.findUnique({ 
+        where: { id: itemId },
+        include: { checkpoints: true }
+      });
+      
+      if (!item || item.userId !== DEFAULT_USER_ID) {
+        throw Errors.notFound('Revision item');
+      }
+
+      // 1. Update the parent item learnedAt
+      const updatedItem = await tx.revisionItem.update({
+        where: { id: itemId },
+        data: { learnedAt: newLearnedAt }
+      });
+
+      // 2. Compute new schedule based on the new anchor
+      const newSchedule = computeRevisionSchedule(newLearnedAt);
+
+      // 3. Update existing checkpoints with their new due dates
+      for (const cp of newSchedule) {
+        // Find existing checkpoint with same sequence
+        const existingCp = item.checkpoints.find((c: any) => c.sequence === cp.sequence);
+        if (existingCp) {
+          await tx.revisionCheckpoint.update({
+            where: { id: existingCp.id },
+            data: { dueDate: cp.dueDate }
+          });
+        }
+      }
+
+      return updatedItem;
+    });
+
+    revalidatePath('/revision');
+    revalidatePath('/');
+    return result;
   });
 }
 

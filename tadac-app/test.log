@@ -1,0 +1,36 @@
+
+> tadac-app@0.1.0 test
+> vitest run
+
+[33m(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m
+[1m[43m DEPRECATED [49m[22m [33m`test.poolOptions` was removed in Vitest 4. All previous `poolOptions` are now top-level options. Please, refer to the migration guide: https://v4.vitest.dev/guide/migration#pool-rework[39m
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.0 [39m[90mD:/tadac/tadac-app[39m
+
+[90mstdout[2m | src/app/actions/__tests__/revision.test.ts
+[22m[39mSetting up test database at ./test.db...
+
+[90mstdout[2m | src/lib/__tests__/date.test.ts
+[22m[39mSetting up test database at ./test.db...
+
+[90mstdout[2m | src/lib/__tests__/date.test.ts
+[22m[39mCould not unlink test.db (file locked), skipping teardown
+
+ [32m✓[39m src/lib/__tests__/date.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 7020[2mms[22m[39m
+[90mstdout[2m | src/app/actions/__tests__/interview.test.ts
+[22m[39mSetting up test database at ./test.db...
+
+[90mstdout[2m | src/app/actions/__tests__/revision.test.ts
+[22m[39mCould not unlink test.db (file locked), skipping teardown
+
+ [32m✓[39m src/app/actions/__tests__/revision.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 7134[2mms[22m[39m
+ [32m✓[39m src/app/actions/__tests__/interview.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 7545[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m13 passed[39m[22m[90m (13)[39m
+[2m   Start at [22m 15:07:47
+[2m   Duration [22m 8.18s[2m (tests 96%, setup 2%, transform 2%, import 1%)[22m
+
