@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Tadac Engine Control",
+  "version": "1.0.0",
+  "description": "Floating HUD acting as a remote control proxy for the Tadac Focus Core.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "action": {
+    "default_title": "Summon Tadac HUD"
+  },
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://localhost:3000/*"],
+      "js": ["src/relay.ts"],
+      "run_at": "document_start"
+    }
+  ],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "<all_urls>"
+  ]
+}
