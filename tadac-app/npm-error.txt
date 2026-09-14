@@ -1,0 +1,31 @@
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: vitest@5.0.0
+npm error Found: @types/node@20.19.43
+npm error node_modules/@types/node
+npm error   dev @types/node@"^20" from the root project
+npm error   peer @types/node@"*" from ts-node@10.9.2
+npm error   node_modules/ts-node
+npm error     dev ts-node@"^10.9.2" from the root project
+npm error   1 more (vite)
+npm error
+npm error Could not resolve dependency:
+npm error peerOptional @types/node@"^22.0.0 || >=24.0.0" from vitest@5.0.0
+npm error node_modules/vitest
+npm error   dev vitest@"^5.0.0" from the root project
+npm error
+npm error Conflicting peer dependency: @types/node@26.5.1
+npm error node_modules/@types/node
+npm error   peerOptional @types/node@"^22.0.0 || >=24.0.0" from vitest@5.0.0
+npm error   node_modules/vitest
+npm error     dev vitest@"^5.0.0" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error C:\Users\HP\AppData\Local\npm-cache\_logs\2026-09-14T12_21_25_040Z-eresolve-report.txt
+npm error A complete log of this run can be found in: C:\Users\HP\AppData\Local\npm-cache\_logs\2026-09-14T12_21_25_040Z-debug-0.log
