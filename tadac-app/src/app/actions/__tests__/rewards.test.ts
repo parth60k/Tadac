@@ -49,7 +49,7 @@ describe('Gamification Rewards Engine', () => {
     
     await deleteReward(reward.data.id);
     
-    const db = await getRewards();
+    const db: any = await getRewards();
     expect(db.data).toHaveLength(0);
   });
 });

@@ -83,7 +83,7 @@ export default function ProgressClient({ data }: { data: ProgressData }) {
           <h2 style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
             <BarChart3 size={18} /> Focus Trajectory (Last 7 Days)
           </h2>
-          <Panel padding="xl">
+          <Panel padding="lg">
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, height: 200, paddingBottom: 24, borderBottom: '1px solid var(--panel-border)' }}>
               {data.chartData.map((d, i) => {
                 const heightPct = data.chartData.length > 0 ? (d.value / maxChartVal) * 100 : 0;

@@ -223,7 +223,7 @@ export default function JournalWizard({ today, summary, existingJournal }: { tod
       )}
 
       {step === 4 && (
-        <Panel padding="xl" style={{ textAlign: 'center', marginTop: 40 }} className="fade-in">
+        <Panel padding="lg" style={{ textAlign: 'center', marginTop: 40 }} className="fade-in">
           <div style={{ 
             width: 80, height: 80, borderRadius: '50%', background: 'var(--success)22', 
             display: 'flex', alignItems: 'center', justifyContent: 'center', 
@@ -242,7 +242,7 @@ export default function JournalWizard({ today, summary, existingJournal }: { tod
             +10 XP Awarded
           </div>
           <div>
-            <Button variant="outline" onClick={() => window.location.href = '/'}>
+            <Button variant="ghost" onClick={() => window.location.href = '/'}>
               Return to Dashboard
             </Button>
           </div>

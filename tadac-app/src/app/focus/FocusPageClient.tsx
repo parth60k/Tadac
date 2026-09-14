@@ -8,6 +8,7 @@ import FocusControls from '@/components/focus/FocusControls';
 import PresetSelector from '@/components/focus/PresetSelector';
 import CategoryTaskPicker from '@/components/focus/CategoryTaskPicker';
 import SessionCompleteCard from '@/components/focus/SessionCompleteCard';
+import LocalMusicPlayer from '@/components/music/LocalMusicPlayer';
 import { useFocus } from '@/lib/focus-context';
 import { formatDuration } from '@/lib/date';
 
@@ -157,6 +158,9 @@ function FocusLayout({
               <CategoryTaskPicker tasks={tasks} />
             </Panel>
           )}
+
+          {/* Seamless Audio Engine */}
+          <LocalMusicPlayer />
 
           {/* Active session info */}
           {isActive && (

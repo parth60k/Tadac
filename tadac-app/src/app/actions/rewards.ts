@@ -26,8 +26,8 @@ export async function getRewards() {
  */
 export async function createReward(name: string, requirement: string, description: string = '') {
   return withErrorHandling(async () => {
-    if (!name.trim()) throw Errors.badRequest('Reward name is required');
-    if (!requirement.trim()) throw Errors.badRequest('Requirement is required');
+    if (!name.trim()) throw Errors.validation('Reward name is required');
+    if (!requirement.trim()) throw Errors.validation('Requirement is required');
 
     const reward = await prisma.reward.create({
       data: {
@@ -54,7 +54,7 @@ export async function redeemReward(id: string) {
     }
 
     if (existing.redeemed) {
-      throw Errors.badRequest('Reward is already redeemed');
+      throw Errors.validation('Reward is already redeemed');
     }
 
     const updated = await prisma.reward.update({

@@ -105,7 +105,7 @@ export default function RewardsClient({ initialRewards }: { initialRewards: Rewa
                 <Button variant="ghost" size="sm" onClick={() => handleDelete(r.id)} disabled={isPending} style={{ color: 'var(--due)' }}>
                   <Trash2 size={14} />
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => handleRedeem(r.id)} disabled={isPending} style={{ gap: 6, color: 'var(--success)', borderColor: 'var(--success)' }}>
+                <Button variant="ghost" size="sm" onClick={() => handleRedeem(r.id)} disabled={isPending} style={{ gap: 6, color: 'var(--success)', borderColor: 'var(--success)' }}>
                   {isPending ? <Loader2 size={14} className="spin" /> : <CheckCircle2 size={14} />} Redeem
                 </Button>
               </div>

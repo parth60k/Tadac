@@ -1,0 +1,13 @@
+
+> tadac-app@0.1.0 typecheck
+> tsc --noEmit
+
+src/app/actions/__tests__/rewards.test.ts(53,15): error TS2339: Property 'data' does not exist on type 'ApiResponse<{ id: string; userId: string; createdAt: Date; updatedAt: Date; description: string; name: string; requirement: string; redeemed: boolean; redeemedAt: Date | null; }[]>'.
+  Property 'data' does not exist on type 'ApiError'.
+src/app/actions/rewards.ts(29,36): error TS2339: Property 'badRequest' does not exist on type '{ notFound: (entity: string) => AppError; alreadyExists: (entity: string) => AppError; validation: (message: string) => AppError; conflict: (message: string) => AppError; internal: (cause?: unknown) => AppError; externalUnavailable: (source: string) => AppError; }'.
+src/app/actions/rewards.ts(30,43): error TS2339: Property 'badRequest' does not exist on type '{ notFound: (entity: string) => AppError; alreadyExists: (entity: string) => AppError; validation: (message: string) => AppError; conflict: (message: string) => AppError; internal: (cause?: unknown) => AppError; externalUnavailable: (source: string) => AppError; }'.
+src/app/actions/rewards.ts(57,20): error TS2339: Property 'badRequest' does not exist on type '{ notFound: (entity: string) => AppError; alreadyExists: (entity: string) => AppError; validation: (message: string) => AppError; conflict: (message: string) => AppError; internal: (cause?: unknown) => AppError; externalUnavailable: (source: string) => AppError; }'.
+src/app/journal/JournalWizard.tsx(226,16): error TS2322: Type '"xl"' is not assignable to type '"none" | "sm" | "md" | "lg" | undefined'.
+src/app/journal/JournalWizard.tsx(245,21): error TS2322: Type '"outline"' is not assignable to type 'Variant | undefined'.
+src/app/progress/ProgressClient.tsx(86,18): error TS2322: Type '"xl"' is not assignable to type '"none" | "sm" | "md" | "lg" | undefined'.
+
