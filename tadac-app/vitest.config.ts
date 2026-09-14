@@ -9,8 +9,6 @@ export default defineConfig({
     env: {
       DATABASE_URL: 'file:./test.db'
     },
-    poolOptions: {
-      threads: { singleThread: true }
-    }
+    fileParallelism: false
   },
 });

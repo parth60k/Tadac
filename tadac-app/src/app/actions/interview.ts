@@ -47,7 +47,7 @@ export async function getDailyQuestions() {
     const answeredCount = todaysAttempts.length;
     if (answeredCount >= DAILY_QUOTA) {
       return {
-        questions: todaysAttempts.map(a => a.question),
+        questions: todaysAttempts.map((a: any) => a.question),
         attempts:  todaysAttempts,
         today,
         quotaMet: true
@@ -55,7 +55,7 @@ export async function getDailyQuestions() {
     }
 
     const remainingQuota = DAILY_QUOTA - answeredCount;
-    const answeredQuestionIdsToday = new Set(todaysAttempts.map(a => a.questionId));
+    const answeredQuestionIdsToday = new Set(todaysAttempts.map((a: any) => a.questionId));
 
     // 2. Identify priority queue (previously incorrect, never subsequently correct, not attempted today)
     // First, find all correct attempts across all time to exclude them from the failure list
@@ -63,7 +63,7 @@ export async function getDailyQuestions() {
       where: { userId: DEFAULT_USER_ID, correct: true },
       select: { questionId: true }
     });
-    const globallyCorrectIds = new Set(correctAttempts.map(a => a.questionId));
+    const globallyCorrectIds = new Set(correctAttempts.map((a: any) => a.questionId));
 
     // Next, find all attempts to see what's been gotten wrong
     const incorrectAttempts = await prisma.interviewAttempt.findMany({
@@ -75,17 +75,17 @@ export async function getDailyQuestions() {
       select: { questionId: true }
     });
     
-    let failedIdsPool = Array.from(new Set(incorrectAttempts.map(a => a.questionId)))
-      .filter(id => !answeredQuestionIdsToday.has(id));
+    let failedIdsPool = Array.from(new Set(incorrectAttempts.map((a: any) => a.questionId)))
+      .filter((id: any) => !answeredQuestionIdsToday.has(id));
 
     // Deterministically shuffle the failed pool so it isn't completely rigid
-    failedIdsPool = shuffleArray(failedIdsPool, `${DEFAULT_USER_ID}-${today}-failed`);
+    failedIdsPool = shuffleArray(failedIdsPool as string[], `${DEFAULT_USER_ID}-${today}-failed`);
 
     const selectedIds: string[] = [];
     
     // Take from priority queue first
     for (const fid of failedIdsPool) {
-      if (selectedIds.length < remainingQuota) selectedIds.push(fid);
+      if (selectedIds.length < remainingQuota) selectedIds.push(fid as string);
     }
 
     // 3. Fallback to never-attempted questions if quota still not met
@@ -95,7 +95,7 @@ export async function getDailyQuestions() {
         where: { userId: DEFAULT_USER_ID },
         select: { questionId: true }
       });
-      const allAttemptedIds = new Set(allAttempts.map(a => a.questionId));
+      const allAttemptedIds = new Set(allAttempts.map((a: any) => a.questionId));
 
       const freshQuestions = await prisma.interviewQuestion.findMany({
         where: { active: true },
@@ -103,14 +103,14 @@ export async function getDailyQuestions() {
       });
       
       let freshIdsPool = freshQuestions
-        .map(q => q.id)
-        .filter(id => !allAttemptedIds.has(id));
+        .map((q: any) => q.id)
+        .filter((id: any) => !allAttemptedIds.has(id));
 
       // Deterministically pick fresh questions using today's seed
-      freshIdsPool = shuffleArray(freshIdsPool, `${DEFAULT_USER_ID}-${today}-fresh`);
+      freshIdsPool = shuffleArray(freshIdsPool as string[], `${DEFAULT_USER_ID}-${today}-fresh`);
 
       for (const fid of freshIdsPool) {
-        if (selectedIds.length < remainingQuota) selectedIds.push(fid);
+        if (selectedIds.length < remainingQuota) selectedIds.push(fid as string);
       }
     }
     
@@ -120,11 +120,11 @@ export async function getDailyQuestions() {
     });
 
     // Make sure they are returned deterministically sorted (e.g. by our selected array order)
-    todaysSelectedQuestions.sort((a, b) => selectedIds.indexOf(a.id) - selectedIds.indexOf(b.id));
+    todaysSelectedQuestions.sort((a: any, b: any) => selectedIds.indexOf(a.id) - selectedIds.indexOf(b.id));
 
     // Complete list for today's UI
     const finalQueue = [
-      ...todaysAttempts.map(a => a.question), // the ones already done today
+      ...todaysAttempts.map((a: any) => a.question), // the ones already done today
       ...todaysSelectedQuestions
     ];
 
@@ -201,5 +201,54 @@ export async function submitInterviewAttempt(questionId: string, userAnswer: str
     revalidatePath('/interview');
     revalidatePath('/');
     return attempt;
+  });
+}
+
+export async function getWeakAreas() {
+  return withErrorHandling(async () => {
+    // 1. Fetch all attempts with their associated question topic
+    const attempts = await prisma.interviewAttempt.findMany({
+      where: { userId: DEFAULT_USER_ID },
+      include: {
+        question: {
+          select: { topic: true }
+        }
+      }
+    });
+
+    if (attempts.length === 0) return [];
+
+    // 2. Map and aggregate accuracy
+    const topicStats: Record<string, { total: number; correct: number }> = {};
+    
+    for (const attempt of attempts) {
+      const topic = attempt.question.topic;
+      if (!topicStats[topic]) {
+        topicStats[topic] = { total: 0, correct: 0 };
+      }
+      topicStats[topic].total += 1;
+      if (attempt.correct) {
+        topicStats[topic].correct += 1;
+      }
+    }
+
+    // 3. Filter minimum attempt threshold, compute %, sort
+    const MIN_ATTEMPTS = 2;
+    const weakAreas = Object.keys(topicStats)
+      .map(topic => {
+        const stats = topicStats[topic];
+        const accuracy = Math.round((stats.correct / stats.total) * 100);
+        return { topic, accuracy, totalAttempts: stats.total };
+      })
+      .filter(stat => stat.totalAttempts >= MIN_ATTEMPTS)
+      .sort((a, b) => {
+        // Sort primarily by accuracy ascending (lowest first)
+        if (a.accuracy !== b.accuracy) return a.accuracy - b.accuracy;
+        // Secondary sort by total attempts descending (more attempts = more confidence in weakness)
+        return b.totalAttempts - a.totalAttempts;
+      })
+      .slice(0, 3);
+
+    return weakAreas;
   });
 }

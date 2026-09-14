@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
-import { getDailyQuestions } from '@/app/actions/interview';
+import { getDailyQuestions, getWeakAreas } from '@/app/actions/interview';
 import InterviewClient from './InterviewClient';
+import WeakAreasPanel from './WeakAreasPanel';
+import ExternalPractice from './ExternalPractice';
 
 export const metadata: Metadata = {
   title: 'Daily Practice',
@@ -9,6 +11,8 @@ export const metadata: Metadata = {
 
 export default async function InterviewPage() {
   const data = await getDailyQuestions();
+  const weakAreasRes = await getWeakAreas();
+  const weakAreas = weakAreasRes?.success ? weakAreasRes.data : [];
   
   if (!data.success) {
     return (
@@ -18,5 +22,16 @@ export default async function InterviewPage() {
     );
   }
 
-  return <InterviewClient initialData={data.data} />;
+  return (
+    <div style={{ paddingBottom: 60 }}>
+      {/* Quiz Area */}
+      <InterviewClient initialData={data.data} />
+      
+      {/* Analytics & Ext. Resources below */}
+      <div style={{ maxWidth: 700, margin: '0 auto' }}>
+        <WeakAreasPanel areas={weakAreas} />
+        <ExternalPractice />
+      </div>
+    </div>
+  );
 }
