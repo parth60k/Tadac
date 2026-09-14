@@ -9,25 +9,32 @@ vi.mock('next/cache', () => ({
 }));
 
 beforeAll(() => {
-  // Push the schema to the test database
-  console.log("Setting up test database at ./test.db...");
+  // Push the schema to the Postgres test database natively
+  console.log("Setting up Postgres test database at tadac_test...");
   execSync('npx prisma db push --accept-data-loss', { 
     stdio: 'ignore', 
-    env: { ...process.env, DATABASE_URL: 'file:./test.db' }
+    env: { ...process.env, DATABASE_URL: process.env.TEST_DATABASE_URL }
   });
 });
 
 afterAll(async () => {
   await prisma.$disconnect();
-  // Optional: Clean up test.db
+  // Truncate tables natively to avoid physical file destruction issues
   try {
-    if (fs.existsSync('./prisma/test.db')) {
-      fs.unlinkSync('./prisma/test.db');
-    }
-    if (fs.existsSync(path.join(process.cwd(), 'test.db'))) {
-      fs.unlinkSync(path.join(process.cwd(), 'test.db'));
+    const tableNames = await prisma.$queryRaw<
+      Array<{ tablename: string }>
+    >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
+
+    const tables = tableNames
+      .map(({ tablename }: { tablename: string }) => tablename)
+      .filter((name: string) => name !== '_prisma_migrations')
+      .map((name: string) => `"public"."${name}"`)
+      .join(', ');
+
+    if (tables !== '') {
+      await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${tables} CASCADE;`);
     }
   } catch (e) {
-    console.log("Could not unlink test.db (file locked), skipping teardown");
+    console.log("Could not truncate Postgres tables gracefully natively:", e);
   }
 });

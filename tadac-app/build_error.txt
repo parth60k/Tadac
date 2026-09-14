@@ -1,0 +1,363 @@
+﻿
+> tadac-app@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.3.5 (Turbopack)
+- Environments: .env
+Γ£ô Running next.config.ts took 76ms
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 2.5s
+  Running TypeScript ...
+  Finished TypeScript in 2.7s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/13) ...
+prisma:error 
+Invalid `prisma.focusSession.findMany()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+prisma:error 
+Invalid `prisma.task.findMany()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+prisma:error 
+Invalid `prisma.interviewAttempt.findMany()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+prisma:error 
+Invalid `prisma.focusSession.findMany()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+prisma:error 
+Invalid `prisma.task.findMany()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+prisma:error 
+Invalid `prisma.focusSession.findMany()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+prisma:error 
+Invalid `prisma.revisionCheckpoint.count()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+prisma:error 
+Invalid `prisma.interviewAttempt.count()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+prisma:error 
+Invalid `prisma.xpEvent.aggregate()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+prisma:error 
+Invalid `prisma.journalEntry.findUnique()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+node.exe : [Internal Error] Error 
+[PrismaClientInitializationError]: 
+At line:1 char:1
++ & "E:\nodejs/node.exe" "E:\nodejs/n
+ode_modules/npm/bin/npm-cli.js" ru 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpe 
+   cified: ([Internal Error...izati  
+  onError]: :String) [], RemoteExc   
+ eption
+    + FullyQualifiedErrorId : Native 
+   CommandError
+ 
+Invalid 
+`prisma.interviewAttempt.findMany()` 
+invocation:
+
+
+error: Error validating datasource 
+`db`: the URL must start with the 
+protocol `postgresql://` or 
+`postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at <unknown> (-->  
+schema.prisma:10)
+    at async 
+(src\app\actions\interview.ts:41:28)
+    at async g 
+(src\lib\errors.ts:98:18)
+    at async g 
+(src\app\interview\page.tsx:13:16)
+  39 |     
+  40 |     // 1. Get questions 
+ALREADY attempted today
+> 41 |     const todaysAttempts = 
+await 
+prisma.interviewAttempt.findMany({
+     |                            ^
+  42 |       where: { userId: 
+DEFAULT_USER_ID, attemptDate: today 
+},
+  43 |       include: { question: 
+true }
+  44 |     }); {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+[Internal Error] Error 
+[PrismaClientInitializationError]: 
+Invalid 
+`prisma.focusSession.findMany()` 
+invocation:
+
+
+error: Error validating datasource 
+`db`: the URL must start with the 
+protocol `postgresql://` or 
+`postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at <unknown> (-->  
+schema.prisma:10)
+    at async 
+(src\app\actions\journal.ts:25:27)
+    at async g 
+(src\lib\errors.ts:98:18)
+    at async f 
+(src\app\journal\page.tsx:18:38)
+  23 |
+  24 |     // 1. Focus Session Mins
+> 25 |     const focusSessions = 
+await prisma.focusSession.findMany({
+     |                           ^
+  26 |       where: { 
+  27 |         userId: 
+DEFAULT_USER_ID, 
+  28 |         status: 'completed',  
+{
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+[Internal Error] Error 
+[PrismaClientInitializationError]: 
+Invalid 
+`prisma.journalEntry.findUnique()` 
+invocation:
+
+
+error: Error validating datasource 
+`db`: the URL must start with the 
+protocol `postgresql://` or 
+`postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at <unknown> (-->  
+schema.prisma:10)
+    at async 
+(src\app\actions\journal.ts:82:12)
+    at async g 
+(src\lib\errors.ts:98:18)
+    at async f 
+(src\app\journal\page.tsx:18:38)
+  80 |   return 
+withErrorHandling(async () => {
+  81 |     assertDateString(dateStr, 
+'getJournalEntry');
+> 82 |     return await 
+prisma.journalEntry.findUnique({
+     |            ^
+  83 |       where: {
+  84 |         userId_entryDate: {
+  85 |           userId: 
+DEFAULT_USER_ID, {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+prisma:error 
+Invalid `prisma.interviewAttempt.findMany()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+[Internal Error] Error 
+[PrismaClientInitializationError]: 
+Invalid 
+`prisma.interviewAttempt.findMany()` 
+invocation:
+
+
+error: Error validating datasource 
+`db`: the URL must start with the 
+protocol `postgresql://` or 
+`postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at <unknown> (-->  
+schema.prisma:10)
+    at async 
+(src\app\actions\interview.ts:210:22)
+    at async g 
+(src\lib\errors.ts:98:18)
+    at async g 
+(src\app\interview\page.tsx:14:24)
+  208 |   return 
+withErrorHandling(async () => {
+  209 |     // 1. Fetch all attempts 
+with their associated question topic
+> 210 |     const attempts = await 
+prisma.interviewAttempt.findMany({
+      |                      ^
+  211 |       where: { userId: 
+DEFAULT_USER_ID },
+  212 |       include: {
+  213 |         question: { {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Error occurred prerendering page 
+"/". Read more: https://nextjs.org/do
+cs/messages/prerender-error
+Error 
+[PrismaClientInitializationError]: 
+Invalid `prisma.task.findMany()` 
+invocation:
+
+
+error: Error validating datasource 
+`db`: the URL must start with the 
+protocol `postgresql://` or 
+`postgres://`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at <unknown> (-->  
+schema.prisma:10)
+    at async p 
+(src\app\actions\tasks.ts:202:7)
+    at async C 
+(src\app\page.tsx:19:16)
+  200 |     todayAttempts,
+  201 |     xpTotal,
+> 202 |   ] = await Promise.all([
+      |       ^
+  203 |     // Today's tasks
+  204 |     prisma.task.findMany({
+  205 |       where:   { userId: 
+DEFAULT_USER_ID, scheduledDate: 
+today }, {
+  clientVersion: '5.22.0',
+  errorCode: undefined,
+  digest: '1088413041'
+}
+Export encountered an error on 
+/page: /, exiting the build.
+Γ¿» Next.js build worker exited with 
+code: 1 and signal: null

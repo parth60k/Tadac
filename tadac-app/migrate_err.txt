@@ -1,0 +1,33 @@
+﻿Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "tadac_dev", schema "public" at "localhost:5433"
+
+node.exe : Error: P3006
+At line:1 char:1
++ & "E:\nodejs/node.exe" "E:\nodejs/n
+ode_modules/npm/bin/npx-cli.js" pr 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpe 
+   cified: (Error: P3006:String) []  
+  , RemoteException
+    + FullyQualifiedErrorId : Native 
+   CommandError
+ 
+
+Migration `0_init` failed to apply 
+cleanly to the shadow database. 
+Error:
+ERROR: syntax error at or near "∩╗┐"
+   0: sql_schema_connector::validate_
+migrations
+           with namespaces=None
+             at schema-engine\connect
+ors\sql-schema-connector\src\lib.rs:3
+35
+   1: 
+schema_core::state::DevDiagnostic
+             at 
+schema-engine\core\src\state.rs:276
+

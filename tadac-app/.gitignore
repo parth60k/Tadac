@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+*.db
+*.sqlite
+migrations_backup_sqlite/
 
 # debug
 npm-debug.log*

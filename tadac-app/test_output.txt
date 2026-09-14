@@ -9,116 +9,339 @@ Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
 
 [1m[30m[46m RUN [49m[39m[22m [36mv5.0.0 [39m[90mD:/tadac/tadac-app[39m
 
-[90mstdout[2m | src/app/actions/__tests__/journal.test.ts
-[22m[39mSetting up test database at ./test.db...
+[90mstdout[2m | src/app/actions/__tests__/revision.test.ts
+[22m[39mSetting up Postgres test database at tadac_test...
 
-[90mstdout[2m | src/app/actions/__tests__/journal.test.ts[2m > [22m[2mJournal Engine & Nightly Flow[2m > [22m[2mawards strictly 10 XP idempotently, preventing infinite loop farming
+[90mstdout[2m | src/app/actions/__tests__/revision.test.ts
 [22m[39mprisma:error 
-Invalid `prisma.focusSession.findMany()` invocation in
-D:/tadac/tadac-app/src/app/actions/journal.ts:21:53
+Invalid `prisma.$queryRaw()` invocation:
 
-  18 assertDateString(dateStr, 'getDailySummary');
-  19 
-  20 // 1. Focus Session Mins
-→ 21 const focusSessions = await prisma.focusSession.findMany({
-       where: {
-         userId: "user_default",
-         status: "completed",
-         createdAt: {
-           startsWith: "2026-10-02",
-           ~~~~~~~~~~
-     ?     equals?: DateTime | DateTimeFieldRefInput,
-     ?     in?: DateTime[],
-     ?     notIn?: DateTime[],
-     ?     lt?: DateTime | DateTimeFieldRefInput,
-     ?     lte?: DateTime | DateTimeFieldRefInput,
-     ?     gt?: DateTime | DateTimeFieldRefInput,
-     ?     gte?: DateTime | DateTimeFieldRefInput,
-     ?     not?: DateTime | NestedDateTimeFilter
-         }
-       }
-     })
 
-Unknown argument `startsWith`. Available options are marked with ?.
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
 
-[90mstderr[2m | src/app/actions/__tests__/journal.test.ts[2m > [22m[2mJournal Engine & Nightly Flow[2m > [22m[2mawards strictly 10 XP idempotently, preventing infinite loop farming
-[22m[39m[Internal Error] PrismaClientValidationError: 
-Invalid `prisma.focusSession.findMany()` invocation in
-D:/tadac/tadac-app/src/app/actions/journal.ts:21:53
+Validation Error Count: 1
 
-  18 assertDateString(dateStr, 'getDailySummary');
-  19 
-  20 // 1. Focus Session Mins
-→ 21 const focusSessions = await prisma.focusSession.findMany({
-       where: {
-         userId: "user_default",
-         status: "completed",
-         createdAt: {
-           startsWith: "2026-10-02",
-           ~~~~~~~~~~
-     ?     equals?: DateTime | DateTimeFieldRefInput,
-     ?     in?: DateTime[],
-     ?     notIn?: DateTime[],
-     ?     lt?: DateTime | DateTimeFieldRefInput,
-     ?     lte?: DateTime | DateTimeFieldRefInput,
-     ?     gt?: DateTime | DateTimeFieldRefInput,
-     ?     gte?: DateTime | DateTimeFieldRefInput,
-     ?     not?: DateTime | NestedDateTimeFilter
-         }
-       }
-     })
+[90mstdout[2m | src/app/actions/__tests__/revision.test.ts
+[22m[39mCould not truncate Postgres tables gracefully natively: PrismaClientInitializationError: 
+Invalid `prisma.$queryRaw()` invocation:
 
-Unknown argument `startsWith`. Available options are marked with ?.
-    at wn [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:29:1363[90m)[39m
-    at $n.handleRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6958[90m)[39m
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:7615[90m)[39m
     at $n.handleAndLogRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6623[90m)[39m
     at $n.request [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6307[90m)[39m
     at l [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:130:9633[90m)[39m
-    at D:/tadac/tadac-app/src/app/actions/journal.ts:21:27
-    at withErrorHandling (D:/tadac/tadac-app/src/lib/errors.ts:98:18)
-    at D:/tadac/tadac-app/src/app/actions/__tests__/journal.test.ts:101:24
-    at [90mfile:///D:/tadac/tadac-app/[39mnode_modules/[4mvitest[24m/dist/chunks/run.CQOUYP-x.js:2783:20 {
-  clientVersion: [32m'5.22.0'[39m
+    at D:/tadac/tadac-app/vitest.setup.ts:24:24 {
+  clientVersion: [32m'5.22.0'[39m,
+  errorCode: [90mundefined[39m
 }
 
- [31m❯[39m src/app/actions/__tests__/journal.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 3391[2mms[22m[39m
-   [31m❯[39m Journal Engine & Nightly Flow [2m(2)[22m
-     [32m✓[39m scaffolds strictly missing tasks without producing duplicate db rows for tomorrow[32m 44[2mms[22m[39m
-[31m     [31m×[31m awards strictly 10 XP idempotently, preventing infinite loop farming[39m[32m 51[2mms[22m[39m
+ [31m❯[39m src/app/actions/__tests__/revision.test.ts [2m([22m[2m4 tests[22m[2m | [22m[33m4 skipped[39m[2m)[22m[33m 5929[2mms[22m[39m
+   [2m[90m↓[39m[22m Revision Engine - Actions & DB Integration [2m(4)[22m
+     [2m[90m↓[39m[22m 11. idempotent create: repeated calls DO NOT create duplicates
+     [2m[90m↓[39m[22m 8, 9, 10. completing and overdue checkpoint handling + idempotent XP
+     [2m[90m↓[39m[22m 12, 16. edited learning date strictly recalculates via Day 0 anchor
+     [2m[90m↓[39m[22m 13, 15. deleted item zeroes out counts accurately (cascading)
 [90mstdout[2m | src/app/actions/__tests__/interview.test.ts
-[22m[39mSetting up test database at ./test.db...
+[22m[39mSetting up Postgres test database at tadac_test...
 
- [32m✓[39m src/app/actions/__tests__/interview.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 4728[2mms[22m[39m
+[90mstdout[2m | src/app/actions/__tests__/interview.test.ts
+[22m[39mprisma:error 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+
+[90mstdout[2m | src/app/actions/__tests__/interview.test.ts
+[22m[39mCould not truncate Postgres tables gracefully natively: PrismaClientInitializationError: 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:7615[90m)[39m
+    at $n.handleAndLogRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6623[90m)[39m
+    at $n.request [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6307[90m)[39m
+    at l [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:130:9633[90m)[39m
+    at D:/tadac/tadac-app/vitest.setup.ts:24:24 {
+  clientVersion: [32m'5.22.0'[39m,
+  errorCode: [90mundefined[39m
+}
+
+ [31m❯[39m src/app/actions/__tests__/interview.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[33m 6176[2mms[22m[39m
+   [2m[90m↓[39m[22m Interview Practice Engine [2m(3)[22m
+     [2m[90m↓[39m[22m generates exactly 5 unique questions deterministically on the same day
+     [2m[90m↓[39m[22m records attempt securely, evaluates correctness correctly, and awards 10 XP idempotently
+     [2m[90m↓[39m[22m prioritizes failed questions heavily on subsequent days until corrected
+[90mstdout[2m | src/app/actions/__tests__/rewards.test.ts
+[22m[39mSetting up Postgres test database at tadac_test...
+
+[90mstdout[2m | src/app/actions/__tests__/rewards.test.ts
+[22m[39mprisma:error 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+
+[90mstdout[2m | src/app/actions/__tests__/rewards.test.ts
+[22m[39mCould not truncate Postgres tables gracefully natively: PrismaClientInitializationError: 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:7615[90m)[39m
+    at $n.handleAndLogRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6623[90m)[39m
+    at $n.request [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6307[90m)[39m
+    at l [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:130:9633[90m)[39m
+    at D:/tadac/tadac-app/vitest.setup.ts:24:24 {
+  clientVersion: [32m'5.22.0'[39m,
+  errorCode: [90mundefined[39m
+}
+
+ [31m❯[39m src/app/actions/__tests__/rewards.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m3 skipped[39m[2m)[22m[33m 6098[2mms[22m[39m
+   [2m[90m↓[39m[22m Gamification Rewards Engine [2m(3)[22m
+     [2m[90m↓[39m[22m provisions new physical incentives dynamically
+     [2m[90m↓[39m[22m marks physical rewards uniquely redeemed preventing overlapping claim attempts
+     [2m[90m↓[39m[22m deletes specific rewards seamlessly
+[90mstdout[2m | src/app/actions/__tests__/journal.test.ts
+[22m[39mSetting up Postgres test database at tadac_test...
+
+[90mstdout[2m | src/app/actions/__tests__/journal.test.ts
+[22m[39mprisma:error 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+
+[90mstdout[2m | src/app/actions/__tests__/journal.test.ts
+[22m[39mCould not truncate Postgres tables gracefully natively: PrismaClientInitializationError: 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:7615[90m)[39m
+    at $n.handleAndLogRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6623[90m)[39m
+    at $n.request [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6307[90m)[39m
+    at l [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:130:9633[90m)[39m
+    at D:/tadac/tadac-app/vitest.setup.ts:24:24 {
+  clientVersion: [32m'5.22.0'[39m,
+  errorCode: [90mundefined[39m
+}
+
+ [31m❯[39m src/app/actions/__tests__/journal.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m[33m 6161[2mms[22m[39m
+   [2m[90m↓[39m[22m Journal Engine & Nightly Flow [2m(2)[22m
+     [2m[90m↓[39m[22m scaffolds strictly missing tasks without producing duplicate db rows for tomorrow
+     [2m[90m↓[39m[22m awards strictly 10 XP idempotently, preventing infinite loop farming
 [90mstdout[2m | src/app/actions/__tests__/projects.test.ts
-[22m[39mSetting up test database at ./test.db...
+[22m[39mSetting up Postgres test database at tadac_test...
 
- [32m✓[39m src/app/actions/__tests__/projects.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 3470[2mms[22m[39m
+[90mstdout[2m | src/app/actions/__tests__/projects.test.ts
+[22m[39mprisma:error 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+
+[90mstdout[2m | src/app/actions/__tests__/projects.test.ts
+[22m[39mCould not truncate Postgres tables gracefully natively: PrismaClientInitializationError: 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:7615[90m)[39m
+    at $n.handleAndLogRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6623[90m)[39m
+    at $n.request [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6307[90m)[39m
+    at l [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:130:9633[90m)[39m
+    at D:/tadac/tadac-app/vitest.setup.ts:24:24 {
+  clientVersion: [32m'5.22.0'[39m,
+  errorCode: [90mundefined[39m
+}
+
+ [31m❯[39m src/app/actions/__tests__/projects.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m[33m 6096[2mms[22m[39m
+   [2m[90m↓[39m[22m Project Library Engine [2m(2)[22m
+     [2m[90m↓[39m[22m retrieves project library with active statuses
+     [2m[90m↓[39m[22m updates stage progress flexibly and strictly isolates 50 XP to the FIRST COMPLETION only
 [90mstdout[2m | src/lib/__tests__/date.test.ts
-[22m[39mSetting up test database at ./test.db...
+[22m[39mSetting up Postgres test database at tadac_test...
 
- [32m✓[39m src/lib/__tests__/date.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 3358[2mms[22m[39m
-[90mstdout[2m | src/app/actions/__tests__/revision.test.ts
-[22m[39mSetting up test database at ./test.db...
-
- [32m✓[39m src/app/actions/__tests__/revision.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 4267[2mms[22m[39m
-
-[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
-
-[41m[1m FAIL [22m[49m src/app/actions/__tests__/journal.test.ts[2m > [22mJournal Engine & Nightly Flow[2m > [22mawards strictly 10 XP idempotently, preventing infinite loop farming
-[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'totalXP')[39m
-[36m [2m❯[22m src/app/actions/__tests__/journal.test.ts:[2m102:28[22m[39m
-    [90m100|[39m
-    [90m101|[39m     const dailyTotal = await getDailySummary(todayStr); // should be 1…
-    [90m102|[39m     expect(dailyTotal.data.totalXP).toBe(10);
-    [90m   |[39m                            [31m^[39m
-    [90m103|[39m   });
-    [90m104|[39m });
-
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+[90mstdout[2m | src/lib/__tests__/date.test.ts
+[22m[39mprisma:error 
+Invalid `prisma.$queryRaw()` invocation:
 
 
-[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (5)[39m
-[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m16 passed[39m[22m[90m (17)[39m
-[2m   Start at [22m 15:43:48
-[2m   Duration [22m 21.01s[2m (tests 96%, setup 2%, import 1%, transform 1%)[22m
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+
+[90mstdout[2m | src/lib/__tests__/date.test.ts
+[22m[39mCould not truncate Postgres tables gracefully natively: PrismaClientInitializationError: 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:7615[90m)[39m
+    at $n.handleAndLogRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6623[90m)[39m
+    at $n.request [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6307[90m)[39m
+    at l [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:130:9633[90m)[39m
+    at D:/tadac/tadac-app/vitest.setup.ts:24:24 {
+  clientVersion: [32m'5.22.0'[39m,
+  errorCode: [90mundefined[39m
+}
+
+ [31m❯[39m src/lib/__tests__/date.test.ts [2m([22m[2m6 tests[22m[2m | [22m[33m6 skipped[39m[2m)[22m[33m 6025[2mms[22m[39m
+   [2m[90m↓[39m[22m Revision Engine - Date Domain Logic [2m(6)[22m
+     [2m[90m↓[39m[22m 1-5. correctly generates exactly Day 1, 3, 7, 15, 30 sequence
+     [2m[90m↓[39m[22m 6. month boundary transition
+     [2m[90m↓[39m[22m 7. year boundary transition
+     [2m[90m↓[39m[22m 14. timezone boundary robustness
+     [2m[90m↓[39m[22m ensure time strings are formatted properly as YYYY-MM-DD
+     [2m[90m↓[39m[22m correctly classifies checkpoints
+[90mstdout[2m | src/app/actions/__tests__/progress.test.ts
+[22m[39mSetting up Postgres test database at tadac_test...
+
+[90mstdout[2m | src/app/actions/__tests__/progress.test.ts
+[22m[39mprisma:error 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+
+[90mstdout[2m | src/app/actions/__tests__/progress.test.ts
+[22m[39mCould not truncate Postgres tables gracefully natively: PrismaClientInitializationError: 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Error validating datasource `db`: You must provide a nonempty URL. The environment variable `DATABASE_URL` resolved to an empty string.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "postgresql"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:7615[90m)[39m
+    at $n.handleAndLogRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6623[90m)[39m
+    at $n.request [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6307[90m)[39m
+    at l [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:130:9633[90m)[39m
+    at D:/tadac/tadac-app/vitest.setup.ts:24:24 {
+  clientVersion: [32m'5.22.0'[39m,
+  errorCode: [90mundefined[39m
+}
+
+ [31m❯[39m src/app/actions/__tests__/progress.test.ts [2m([22m[2m2 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m[33m 5985[2mms[22m[39m
+   [2m[90m↓[39m[22m Progress & Streaks Analytics Engine [2m(2)[22m
+     [2m[90m↓[39m[22m calculates streaks with tolerance for non-active dates retaining longest consecutive sequence
+     [2m[90m↓[39m[22m snaps current streak to 0 gracefully without punishing longest historical log if inactivity clears yesterday
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 7 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/__tests__/date.test.ts[2m [ src/lib/__tests__/date.test.ts ][22m
+[41m[1m FAIL [22m[49m src/app/actions/__tests__/interview.test.ts[2m [ src/app/actions/__tests__/interview.test.ts ][22m
+[41m[1m FAIL [22m[49m src/app/actions/__tests__/journal.test.ts[2m [ src/app/actions/__tests__/journal.test.ts ][22m
+[41m[1m FAIL [22m[49m src/app/actions/__tests__/progress.test.ts[2m [ src/app/actions/__tests__/progress.test.ts ][22m
+[41m[1m FAIL [22m[49m src/app/actions/__tests__/projects.test.ts[2m [ src/app/actions/__tests__/projects.test.ts ][22m
+[41m[1m FAIL [22m[49m src/app/actions/__tests__/revision.test.ts[2m [ src/app/actions/__tests__/revision.test.ts ][22m
+[41m[1m FAIL [22m[49m src/app/actions/__tests__/rewards.test.ts[2m [ src/app/actions/__tests__/rewards.test.ts ][22m
+[31m[1mError[22m: Command failed: npx prisma db push --accept-data-loss[39m
+[36m [2m❯[22m vitest.setup.ts:[2m14:3[22m[39m
+    [90m 12|[39m   // Push the schema to the Postgres test database natively
+    [90m 13|[39m   console.log("Setting up Postgres test database at tadac_test...");
+    [90m 14|[39m   execSync('npx prisma db push --accept-data-loss', {
+    [90m   |[39m   [31m^[39m
+    [90m 15|[39m     stdio: 'ignore',
+    [90m 16|[39m     env: { ...process.env, DATABASE_URL: process.env.TEST_DATABASE_URL…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m7 failed[39m[22m[90m (7)[39m
+[2m      Tests [22m [33m22 skipped[39m[90m (22)[39m
+[2m   Start at [22m 22:06:00
+[2m   Duration [22m 44.71s[2m (tests 98%, setup 1%, import 1%)[22m
 
