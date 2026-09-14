@@ -1,0 +1,124 @@
+
+> tadac-app@0.1.0 test
+> vitest run
+
+[33m(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.0 [39m[90mD:/tadac/tadac-app[39m
+
+[90mstdout[2m | src/app/actions/__tests__/journal.test.ts
+[22m[39mSetting up test database at ./test.db...
+
+[90mstdout[2m | src/app/actions/__tests__/journal.test.ts[2m > [22m[2mJournal Engine & Nightly Flow[2m > [22m[2mawards strictly 10 XP idempotently, preventing infinite loop farming
+[22m[39mprisma:error 
+Invalid `prisma.focusSession.findMany()` invocation in
+D:/tadac/tadac-app/src/app/actions/journal.ts:21:53
+
+  18 assertDateString(dateStr, 'getDailySummary');
+  19 
+  20 // 1. Focus Session Mins
+→ 21 const focusSessions = await prisma.focusSession.findMany({
+       where: {
+         userId: "user_default",
+         status: "completed",
+         createdAt: {
+           startsWith: "2026-10-02",
+           ~~~~~~~~~~
+     ?     equals?: DateTime | DateTimeFieldRefInput,
+     ?     in?: DateTime[],
+     ?     notIn?: DateTime[],
+     ?     lt?: DateTime | DateTimeFieldRefInput,
+     ?     lte?: DateTime | DateTimeFieldRefInput,
+     ?     gt?: DateTime | DateTimeFieldRefInput,
+     ?     gte?: DateTime | DateTimeFieldRefInput,
+     ?     not?: DateTime | NestedDateTimeFilter
+         }
+       }
+     })
+
+Unknown argument `startsWith`. Available options are marked with ?.
+
+[90mstderr[2m | src/app/actions/__tests__/journal.test.ts[2m > [22m[2mJournal Engine & Nightly Flow[2m > [22m[2mawards strictly 10 XP idempotently, preventing infinite loop farming
+[22m[39m[Internal Error] PrismaClientValidationError: 
+Invalid `prisma.focusSession.findMany()` invocation in
+D:/tadac/tadac-app/src/app/actions/journal.ts:21:53
+
+  18 assertDateString(dateStr, 'getDailySummary');
+  19 
+  20 // 1. Focus Session Mins
+→ 21 const focusSessions = await prisma.focusSession.findMany({
+       where: {
+         userId: "user_default",
+         status: "completed",
+         createdAt: {
+           startsWith: "2026-10-02",
+           ~~~~~~~~~~
+     ?     equals?: DateTime | DateTimeFieldRefInput,
+     ?     in?: DateTime[],
+     ?     notIn?: DateTime[],
+     ?     lt?: DateTime | DateTimeFieldRefInput,
+     ?     lte?: DateTime | DateTimeFieldRefInput,
+     ?     gt?: DateTime | DateTimeFieldRefInput,
+     ?     gte?: DateTime | DateTimeFieldRefInput,
+     ?     not?: DateTime | NestedDateTimeFilter
+         }
+       }
+     })
+
+Unknown argument `startsWith`. Available options are marked with ?.
+    at wn [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:29:1363[90m)[39m
+    at $n.handleRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6958[90m)[39m
+    at $n.handleAndLogRequestError [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6623[90m)[39m
+    at $n.request [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:121:6307[90m)[39m
+    at l [90m(D:\tadac\tadac-app\[39mnode_modules\[4m@prisma\client[24m\runtime\library.js:130:9633[90m)[39m
+    at D:/tadac/tadac-app/src/app/actions/journal.ts:21:27
+    at withErrorHandling (D:/tadac/tadac-app/src/lib/errors.ts:98:18)
+    at D:/tadac/tadac-app/src/app/actions/__tests__/journal.test.ts:101:24
+    at [90mfile:///D:/tadac/tadac-app/[39mnode_modules/[4mvitest[24m/dist/chunks/run.CQOUYP-x.js:2783:20 {
+  clientVersion: [32m'5.22.0'[39m
+}
+
+ [31m❯[39m src/app/actions/__tests__/journal.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 3391[2mms[22m[39m
+   [31m❯[39m Journal Engine & Nightly Flow [2m(2)[22m
+     [32m✓[39m scaffolds strictly missing tasks without producing duplicate db rows for tomorrow[32m 44[2mms[22m[39m
+[31m     [31m×[31m awards strictly 10 XP idempotently, preventing infinite loop farming[39m[32m 51[2mms[22m[39m
+[90mstdout[2m | src/app/actions/__tests__/interview.test.ts
+[22m[39mSetting up test database at ./test.db...
+
+ [32m✓[39m src/app/actions/__tests__/interview.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 4728[2mms[22m[39m
+[90mstdout[2m | src/app/actions/__tests__/projects.test.ts
+[22m[39mSetting up test database at ./test.db...
+
+ [32m✓[39m src/app/actions/__tests__/projects.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 3470[2mms[22m[39m
+[90mstdout[2m | src/lib/__tests__/date.test.ts
+[22m[39mSetting up test database at ./test.db...
+
+ [32m✓[39m src/lib/__tests__/date.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 3358[2mms[22m[39m
+[90mstdout[2m | src/app/actions/__tests__/revision.test.ts
+[22m[39mSetting up test database at ./test.db...
+
+ [32m✓[39m src/app/actions/__tests__/revision.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 4267[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/app/actions/__tests__/journal.test.ts[2m > [22mJournal Engine & Nightly Flow[2m > [22mawards strictly 10 XP idempotently, preventing infinite loop farming
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'totalXP')[39m
+[36m [2m❯[22m src/app/actions/__tests__/journal.test.ts:[2m102:28[22m[39m
+    [90m100|[39m
+    [90m101|[39m     const dailyTotal = await getDailySummary(todayStr); // should be 1…
+    [90m102|[39m     expect(dailyTotal.data.totalXP).toBe(10);
+    [90m   |[39m                            [31m^[39m
+    [90m103|[39m   });
+    [90m104|[39m });
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (5)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m16 passed[39m[22m[90m (17)[39m
+[2m   Start at [22m 15:43:48
+[2m   Duration [22m 21.01s[2m (tests 96%, setup 2%, import 1%, transform 1%)[22m
+

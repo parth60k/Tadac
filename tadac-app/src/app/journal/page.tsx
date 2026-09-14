@@ -1,27 +1,40 @@
 import type { Metadata } from 'next';
-import Panel from '@/components/ui/Panel';
-import { NotebookPen } from 'lucide-react';
+import { todayDate } from '@/lib/date';
+import { getDailySummary, getJournalEntry } from '@/app/actions/journal';
+import JournalWizard from './JournalWizard';
 
 export const metadata: Metadata = {
-  title: 'Journal',
-  description: 'Nightly reflection journal — what went well, what to improve, plan tomorrow.',
+  title: 'Evening Wrap-up',
+  description: 'Reflect on today and plan for tomorrow seamlessly.',
 };
 
-export default function JournalPage() {
+export default async function JournalPage() {
+  const today = todayDate('Asia/Kolkata');
+  
+  // Concurrently fetch summary + existing journal if any
+  const summaryRes = getDailySummary(today);
+  const journalRes = getJournalEntry(today);
+
+  const [summaryData, journalData] = await Promise.all([summaryRes, journalRes]);
+
+  if (!summaryData.success) {
+    return (
+      <div className="page-wrapper">
+        <p style={{ color: 'var(--due)' }}>Failed to load daily tracking stats.</p>
+      </div>
+    );
+  }
+
+  // Pre-fill journal if it was already filled out today
+  const existingJournal = journalData.success ? journalData.data : null;
+
   return (
-    <div className="page-wrapper">
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 24, color: 'var(--text-primary)' }}>
-        Journal
-      </h1>
-      <Panel padding="lg" style={{ textAlign: 'center' }}>
-        <NotebookPen size={48} color="var(--text-secondary)" strokeWidth={1.5} style={{ margin: '0 auto 16px' }} />
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
-          Journal & Nightly Flow — coming Day 11
-        </p>
-        <p style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', marginTop: 8 }}>
-          Reflect on your day, write what you learned, and plan tomorrow.
-        </p>
-      </Panel>
+    <div className="page-wrapper" style={{ paddingBottom: 60 }}>
+      <JournalWizard 
+        today={today} 
+        summary={summaryData.data} 
+        existingJournal={existingJournal} 
+      />
     </div>
   );
 }
