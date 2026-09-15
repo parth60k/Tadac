@@ -51,18 +51,9 @@ export default function LocalMusicPlayer() {
     }
   }, [volume]);
 
-  // Synchronize playing state with the actual audio element
-  useEffect(() => {
-    if (!audioRef.current || !audioRef.current.src) return;
-    if (isPlaying) {
-      audioRef.current.play().catch(e => {
-        console.warn('Audio auto-play prevented by browser', e);
-        setIsPlaying(false);
-      });
-    } else {
-      audioRef.current.pause();
-    }
-  }, [isPlaying]);
+  // Note: We deliberately removed the [isPlaying] auto-play useEffect cascade here. 
+  // manualTogglePlay and track loading logic strictly handle the actual audio play 
+  // invocations natively, preventing detached promise rejections.
 
   const loadTrack = (idx: number, queueTarget: typeof activeQueue, forcePlay = false) => {
     const queue = queueTarget === 'focus' ? focusFiles : breakFiles;
@@ -121,7 +112,19 @@ export default function LocalMusicPlayer() {
   // Handler for file uploads locally
   const handleUpload = (e: ChangeEvent<HTMLInputElement>, queueType: 'focus' | 'break') => {
     if (!e.target.files) return;
-    const files = Array.from(e.target.files).filter(f => f.type.startsWith('audio/'));
+    const rawFiles = Array.from(e.target.files);
+    console.log(`[MusicDiagnostics] Uploaded ${rawFiles.length} files to ${queueType}.`);
+    
+    const validExtensions = ['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac'];
+    const files = rawFiles.filter(f => {
+      if (f.type.startsWith('audio/')) return true;
+      const ext = f.name.split('.').pop()?.toLowerCase();
+      const isValid = validExtensions.includes(ext || '');
+      if (!isValid) console.warn(`[MusicDiagnostics] Rejected file: ${f.name} (type: ${f.type})`);
+      return isValid;
+    });
+    
+    console.log(`[MusicDiagnostics] Accepted ${files.length} valid audio files.`);
     
     if (queueType === 'focus') setFocusFiles(files);
     else setBreakFiles(files);
@@ -131,6 +134,9 @@ export default function LocalMusicPlayer() {
        setCurrentIndex(0);
        setIsPlaying(false);
     }
+    
+    // Crucial: reset input state so repeated file triggers do not get swallowed silently by the browser
+    e.target.value = '';
   };
 
   // Trigger when a song naturally finishes
@@ -149,15 +155,22 @@ export default function LocalMusicPlayer() {
   };
 
   const manualTogglePlay = () => {
-    if (!currentFile || !audioRef.current) return;
+    if (!currentFile || !audioRef.current) {
+       console.warn(`[MusicDiagnostics] manualTogglePlay aborted. currentFile: ${!!currentFile}, audioRef: ${!!audioRef.current}`);
+       return;
+    }
+    
+    console.log(`[MusicDiagnostics] manualTogglePlay triggered. Current state isPlaying: ${isPlaying}`);
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
+      // Synchronously call play on the DOM element immediately tying it to the user gesture
       audioRef.current.play().then(() => {
+        console.log(`[MusicDiagnostics] Successfully acquired play lock for ${currentFile.name}`);
         setIsPlaying(true);
       }).catch(e => {
-        console.warn('Audio auto-play prevented by browser', e);
+        console.warn('[MusicDiagnostics] Audio auto-play prevented by browser', e);
         setIsPlaying(false);
       });
     }
@@ -208,15 +221,15 @@ export default function LocalMusicPlayer() {
              <Shuffle size={16} />
            </Button>
            
-           <Button variant="ghost" size="sm" onClick={handlePrev} disabled={currentArray.length === 0}>
+           <Button variant="ghost" size="sm" onClick={handlePrev}>
              <SkipBack size={20} />
            </Button>
            
-           <Button variant="primary" style={{ width: 44, height: 44, borderRadius: '50%', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={manualTogglePlay} disabled={currentArray.length === 0}>
+           <Button variant="primary" style={{ width: 44, height: 44, borderRadius: '50%', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={manualTogglePlay}>
              {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
            </Button>
            
-           <Button variant="ghost" size="sm" onClick={handleNext} disabled={currentArray.length === 0}>
+           <Button variant="ghost" size="sm" onClick={handleNext}>
              <SkipForward size={20} />
            </Button>
 

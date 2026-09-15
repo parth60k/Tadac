@@ -204,6 +204,7 @@ export async function submitInterviewAttempt(questionId: string, userAnswer: str
 
     revalidatePath('/interview');
     revalidatePath('/');
+    revalidatePath('/progress');
     return attempt;
   });
 }

@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: 'Your cumulative activity, streaks, and focus metrics.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProgressPage() {
   const data = await getProgressSnapshot('Asia/Kolkata'); // Ideally retrieved safely from settings.
 

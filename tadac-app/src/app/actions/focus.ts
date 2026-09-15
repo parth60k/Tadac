@@ -84,6 +84,7 @@ export async function completeFocusSession(data: {
 
     revalidatePath('/');
     revalidatePath('/focus');
+    revalidatePath('/progress');
     return updated;
   });
 }
@@ -113,6 +114,7 @@ export async function stopFocusSession(data: {
 
     revalidatePath('/');
     revalidatePath('/focus');
+    revalidatePath('/progress');
     return updated;
   });
 }

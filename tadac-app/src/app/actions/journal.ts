@@ -201,6 +201,7 @@ export async function submitJournalEntry(data: JournalInput) {
     revalidatePath('/journal');
     revalidatePath('/planner');
     revalidatePath('/');
+    revalidatePath('/progress');
     return result;
   });
 }

@@ -59,6 +59,7 @@ export async function createRevisionItem(data: {
 
     revalidatePath('/revision');
     revalidatePath('/');
+    revalidatePath('/progress');
     return { item, schedule };
   });
 }
@@ -103,6 +104,7 @@ export async function markCheckpointRevised(checkpointId: string) {
 
     revalidatePath('/revision');
     revalidatePath('/');
+    revalidatePath('/progress');
     return updated;
   });
 }
@@ -151,6 +153,7 @@ export async function updateRevisionLearnedDate(itemId: string, newLearnedAt: st
 
     revalidatePath('/revision');
     revalidatePath('/');
+    revalidatePath('/progress');
     return result;
   });
 }
@@ -165,6 +168,7 @@ export async function deleteRevisionItem(itemId: string) {
     await prisma.revisionItem.delete({ where: { id: itemId } });
     revalidatePath('/revision');
     revalidatePath('/');
+    revalidatePath('/progress');
     return { deleted: true };
   });
 }

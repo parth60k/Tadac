@@ -113,6 +113,7 @@ export async function updateTask(id: string, data: {
 
     revalidatePath('/');
     revalidatePath('/planner');
+    revalidatePath('/progress');
     return updated;
   });
 }
@@ -153,6 +154,7 @@ export async function toggleTaskComplete(id: string) {
 
     revalidatePath('/');
     revalidatePath('/planner');
+    revalidatePath('/progress');
     return updated;
   });
 }
@@ -166,6 +168,7 @@ export async function deleteTask(id: string) {
     await prisma.task.delete({ where: { id } });
     revalidatePath('/');
     revalidatePath('/planner');
+    revalidatePath('/progress');
     return { deleted: true };
   });
 }
