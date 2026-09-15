@@ -77,21 +77,25 @@ const STYLES = `
   }
 `;
 
+// @ts-ignore
+import type { SyncPayload, HudCommandAction, ExtMessageType } from '../../tadac-app/src/lib/bridge';
+
 function DraggableHUD() {
   const [visible, setVisible] = useState(true);
-  const [state, setState] = useState<any>(null);
+  const [state, setState] = useState<SyncPayload | null>(null);
+  
+  // Real-time ticking remaining seconds shielded from Background throttling
+  const [displaySecs, setDisplaySecs] = useState<number>(0);
   
   // Basic drag state natively built to avoid heavy libraries
   const [pos] = useState({ x: 20, y: 20 }); 
 
   useEffect(() => {
-    // Initialization sync
-    chrome.runtime.sendMessage({ type: 'TADAC_STATE_INIT' }, (res) => {
-      if (res?.payload) setState(res.payload);
-    });
+    // Initialization sync - immediately request fresh state to prevent stale cache drift
+    chrome.runtime.sendMessage({ type: 'REQUEST_STATE_SYNC' } as ExtMessageType, () => {});
 
     // Listen to background worker hooks dynamically
-    const listener = (msg: any) => {
+    const listener = (msg: ExtMessageType) => {
       if (msg.type === 'TADAC_HUD_UPDATE') {
         setState(msg.payload);
       } else if (msg.type === 'TADAC_HUD_TOGGLE') {
@@ -103,8 +107,26 @@ function DraggableHUD() {
     return () => chrome.runtime.onMessage.removeListener(listener);
   }, []);
 
-  const sendAction = (action: string) => {
-    chrome.runtime.sendMessage({ type: 'TADAC_COMMAND', action }).catch(() => {});
+  // Visual countdown engine matching exact timestamps
+  useEffect(() => {
+    if (!state) return;
+    
+    // Natively set instantaneous display sync
+    setDisplaySecs(state.remainingSecs);
+    
+    if (state.phase !== 'running' && state.phase !== 'break') return;
+
+    const interval = setInterval(() => {
+      const remainingMS = state.targetEndTime - Date.now();
+      const s = Math.max(0, Math.ceil(remainingMS / 1000));
+      setDisplaySecs(s);
+    }, 250);
+
+    return () => clearInterval(interval);
+  }, [state]);
+
+  const sendAction = (action: HudCommandAction) => {
+    chrome.runtime.sendMessage({ type: 'TADAC_COMMAND', action } as ExtMessageType).catch(() => {});
   };
 
   const formatSecs = (total: number) => {
@@ -119,23 +141,38 @@ function DraggableHUD() {
   return (
     <div className="tadac-hud" style={{ bottom: pos.y, right: pos.x }}>
       {!state ? (
-        <div className="disconnected">Waiting for Tadac App...</div>
+        <div className="disconnected">Open Tadac to connect...</div>
       ) : (
         <>
-          <div className="tadac-header">{state.phase === 'break' ? 'Break' : 'Focus'}</div>
-          <div className="tadac-timer">{formatSecs(state.phase === 'break' ? state.remainingBreakSecs : state.remainingFocusSecs)}</div>
+          <div className="tadac-header">{state.phase}</div>
+          <div className="tadac-timer">{formatSecs(displaySecs)}</div>
           
-          {state.taskTitle && (
-            <div className="tadac-lbl">{state.taskTitle}</div>
-          )}
+          <div className="tadac-lbl">{state.category} {state.linkedTaskId ? '(Task Active)' : ''}</div>
 
           <div className="tadac-controls">
-            <button className="tadac-btn" onClick={() => sendAction(state.phase === 'paused' ? 'RESUME' : 'PAUSE')}>
-              {state.phase === 'paused' ? <Play size={16} /> : <Pause size={16} />}
-            </button>
-            <button className="tadac-btn" onClick={() => sendAction('STOP')}>
-              <Square size={16} />
-            </button>
+            {(state.phase === 'running' || state.phase === 'paused') && (
+              <button className="tadac-btn" onClick={() => sendAction(state.phase === 'paused' ? 'RESUME' : 'PAUSE')}>
+                {state.phase === 'paused' ? <Play size={16} /> : <Pause size={16} />}
+              </button>
+            )}
+            
+            {state.phase === 'idle' && (
+              <button className="tadac-btn" onClick={() => sendAction('START')}>
+                <Play size={16} />
+              </button>
+            )}
+
+            {state.phase !== 'idle' && state.phase !== 'completed' && (
+              <button className="tadac-btn" onClick={() => sendAction('STOP')}>
+                <Square size={16} />
+              </button>
+            )}
+            
+            {state.phase === 'break' && (
+              <button className="tadac-btn" onClick={() => sendAction('SKIP')}>
+                Skip
+              </button>
+            )}
           </div>
         </>
       )}

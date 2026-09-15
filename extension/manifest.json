@@ -17,13 +17,16 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://localhost:3000/*"],
+      "matches": [
+        "http://localhost:3000/*",
+        "https://tadac.app/*"
+      ],
       "js": ["src/relay.ts"],
       "run_at": "document_start"
     }
   ],
   "host_permissions": [
     "http://localhost:3000/*",
-    "<all_urls>"
+    "https://tadac.app/*"
   ]
 }

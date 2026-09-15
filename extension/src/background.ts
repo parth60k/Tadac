@@ -1,9 +1,14 @@
 /// <reference types="chrome"/>
 
+// @ts-ignore
+import type { ExtMessageType } from '../../tadac-app/src/lib/bridge';
+
 // Global state holding the latest payload from Tadac web app relay
 let latestFocusState: any = null;
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+const tadacOrigins = ["*://localhost/*", "*://tadac.app/*"];
+
+chrome.runtime.onMessage.addListener((message: ExtMessageType, _sender, sendResponse) => {
   if (message.type === 'TADAC_STATE_SYNC') {
     latestFocusState = message.payload;
     
@@ -11,7 +16,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     chrome.tabs.query({}, (tabs) => {
       tabs.forEach(tab => {
         if (tab.id) {
-          chrome.tabs.sendMessage(tab.id, { type: 'TADAC_HUD_UPDATE', payload: latestFocusState }).catch(() => {});
+          chrome.tabs.sendMessage(tab.id, { type: 'TADAC_HUD_UPDATE', payload: latestFocusState } as ExtMessageType).catch(() => {});
         }
       });
     });
@@ -19,23 +24,52 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     sendResponse({ success: true });
     return;
   }
+  
+  if (message.type === 'TADAC_DISCONNECTED') {
+    latestFocusState = null;
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach(tab => {
+        if (tab.id) {
+          chrome.tabs.sendMessage(tab.id, { type: 'TADAC_HUD_UPDATE', payload: null } as ExtMessageType).catch(() => {});
+        }
+      });
+    });
+    sendResponse({ success: true });
+    return;
+  }
 
   // Handle command routing back to Tab Relay
   if (message.type === 'TADAC_COMMAND') {
-    chrome.tabs.query({ url: "*://localhost/*" }, (tabs) => {
+    chrome.tabs.query({ url: tadacOrigins }, (tabs) => {
        tabs.forEach(tab => {
          if (tab.id) {
-           chrome.tabs.sendMessage(tab.id, { type: 'TADAC_HUD_COMMAND', action: message.action }).catch(() => {});
+           chrome.tabs.sendMessage(tab.id, { type: 'TADAC_HUD_COMMAND', action: message.action } as ExtMessageType).catch(() => {});
          }
        });
     });
     sendResponse({ success: true });
     return;
   }
-
-  // When a HUD mounts, it manually asks for initialization state
-  if (message.type === 'TADAC_STATE_INIT') {
-    sendResponse({ payload: latestFocusState });
+  
+  if (message.type === 'REQUEST_STATE_SYNC') {
+    // Send request downward to Tab to forcefully re-emit its current state entirely organically
+    chrome.tabs.query({ url: tadacOrigins }, (tabs) => {
+       if (tabs.length === 0) {
+          // Tell HUD we are disconnected
+          chrome.tabs.query({}, (allTabs) => {
+            allTabs.forEach(tab => {
+              if (tab.id) chrome.tabs.sendMessage(tab.id, { type: 'TADAC_HUD_UPDATE', payload: null } as ExtMessageType).catch(() => {});
+            });
+          });
+       } else {
+         tabs.forEach(tab => {
+           if (tab.id) {
+             chrome.tabs.sendMessage(tab.id, { type: 'REQUEST_STATE_SYNC' } as ExtMessageType).catch(() => {});
+           }
+         });
+       }
+    });
+    sendResponse({ success: true });
     return;
   }
 });

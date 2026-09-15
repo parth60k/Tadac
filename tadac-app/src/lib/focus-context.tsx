@@ -247,7 +247,12 @@ export function FocusProvider({ children, xpPerSession = 30 }: {
     
     // Day 14: Push sync globally targeting Extension Relay
     if (typeof window !== 'undefined') {
-      window.postMessage({ source: 'tadac-web', type: 'FOCUS_TICK', payload: state }, '*');
+      const targetEndTime = Date.now() + (state.remainingSecs * 1000);
+      window.postMessage({ 
+        source: 'tadac-web', 
+        type: 'FOCUS_TICK', 
+        payload: { ...state, targetEndTime } 
+      }, '*');
     }
   });
 
@@ -357,16 +362,27 @@ export function FocusProvider({ children, xpPerSession = 30 }: {
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if (e.source !== window || e.data?.source !== 'tadac-extension') return;
+      
+      if (e.data.type === 'HUD_REQUEST_STATE') {
+         // Instant synchronous response back to HUD to prevent caching drift
+         const s = stateRef.current;
+         const targetEndTime = Date.now() + (s.remainingSecs * 1000);
+         window.postMessage({ source: 'tadac-web', type: 'FOCUS_TICK', payload: { ...s, targetEndTime } }, '*');
+         return;
+      }
+
       if (e.data.type === 'HUD_CONTROL') {
         const p = stateRef.current.phase;
         if (e.data.action === 'PAUSE' && p === 'running') dispatch({ type: 'PAUSE' });
         else if (e.data.action === 'RESUME' && p === 'paused') dispatch({ type: 'RESUME' });
         else if (e.data.action === 'STOP') handleStop().catch(console.error);
+        else if (e.data.action === 'SKIP' && p === 'break') handleSkipBreak();
+        else if (e.data.action === 'START' && p === 'idle') handleStart().catch(console.error);
       }
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, [handleStop]);
+  }, [handleStop, handleSkipBreak, handleStart]);
 
   // ── Derived ───────────────────────────────────────────────────────────────
   const progress      = state.totalSecs > 0
