@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { withErrorHandling, Errors } from '@/lib/errors';
 import type { Prisma } from '@prisma/client';
 import type { StageStatus } from '@/types/domain';
+import { ensureStaticData } from '@/lib/bootstrap';
 
 import { ensureDefaultUser, DEFAULT_USER_ID } from '@/lib/user';
 const STAGE_XP_REWARD = 50;
@@ -16,6 +17,7 @@ const STAGE_XP_REWARD = 50;
  */
 export async function getProjectsList() {
   return withErrorHandling(async () => {
+    await ensureStaticData();
     const projects = await prisma.project.findMany({
       where: { active: true },
       include: {
@@ -39,6 +41,7 @@ export async function getProjectsList() {
  */
 export async function getProjectDetails(projectId: string) {
   return withErrorHandling(async () => {
+    await ensureStaticData();
     const project = await prisma.project.findUnique({
       where: { id: projectId },
       include: {

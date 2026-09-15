@@ -21,21 +21,28 @@ export default function LocalMusicPlayer() {
   const [loop, setLoop] = useState(true);
   const [shuffle, setShuffle] = useState(false);
   
-  const [currentObjectURL, setCurrentObjectURL] = useState<string | null>(null);
-  
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Derive current logical active array
   const currentArray = activeQueue === 'focus' ? focusFiles : breakFiles;
+  const currentFile = currentArray.length > 0 && currentIndex >= 0 && currentIndex < currentArray.length ? currentArray[currentIndex] : null;
 
-  // Cleanup ObjectURLs on unmount or URL switch
+  // React strictly to currentFile to mint and track the URL safely (fixes React 18 StrictMode lifecycle revocation bug)
   useEffect(() => {
+    if (!currentFile || !audioRef.current) return;
+    const url = URL.createObjectURL(currentFile);
+    audioRef.current.src = url;
+    audioRef.current.load();
+    if (isPlaying) {
+      audioRef.current.play().catch(e => {
+        console.warn('Audio auto-play prevented by browser', e);
+        setIsPlaying(false);
+      });
+    }
     return () => {
-      if (currentObjectURL) {
-        URL.revokeObjectURL(currentObjectURL);
-      }
+      URL.revokeObjectURL(url);
     };
-  }, [currentObjectURL]);
+  }, [currentFile]); // only trigger on file change. this prevents stale blobs strictly.
 
   // Sync internal Volume natively
   useEffect(() => {
@@ -44,10 +51,21 @@ export default function LocalMusicPlayer() {
     }
   }, [volume]);
 
-  // Build the track loading loop
+  // Synchronize playing state with the actual audio element
+  useEffect(() => {
+    if (!audioRef.current || !audioRef.current.src) return;
+    if (isPlaying) {
+      audioRef.current.play().catch(e => {
+        console.warn('Audio auto-play prevented by browser', e);
+        setIsPlaying(false);
+      });
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isPlaying]);
+
   const loadTrack = (idx: number, queueTarget: typeof activeQueue, forcePlay = false) => {
     const queue = queueTarget === 'focus' ? focusFiles : breakFiles;
-    
     if (queue.length === 0) return;
     
     // Bounds wrapping
@@ -56,30 +74,12 @@ export default function LocalMusicPlayer() {
     if (safeIdx < 0) safeIdx = queue.length - 1;
 
     setCurrentIndex(safeIdx);
-    
-    // Cleanup old URL safely
-    if (currentObjectURL) {
-      URL.revokeObjectURL(currentObjectURL);
-    }
-
-    const file = queue[safeIdx];
-    const newUrl = URL.createObjectURL(file);
-    setCurrentObjectURL(newUrl);
-
-    if (audioRef.current) {
-      audioRef.current.src = newUrl;
-      audioRef.current.load();
-      if (forcePlay) {
-        audioRef.current.play().catch(e => console.warn('Audio auto-play prevented by browser', e));
-        setIsPlaying(true);
-      }
-    }
+    if (forcePlay) setIsPlaying(true);
   };
 
   const handleNext = () => {
     if (currentArray.length === 0) return;
     if (shuffle && currentArray.length > 1) {
-      // Pick random different track
       let n = currentIndex;
       while (n === currentIndex) {
         n = Math.floor(Math.random() * currentArray.length);
@@ -99,10 +99,8 @@ export default function LocalMusicPlayer() {
     if (state.phase === 'running') {
       if (activeQueue !== 'focus') {
         setActiveQueue('focus');
-        loadTrack(0, 'focus', true); // Transition straight to 0 (or optionally resume pos, but 0 is safe)
+        loadTrack(0, 'focus', true); 
       } else {
-        // Just resume
-        audioRef.current?.play().catch(console.warn);
         setIsPlaying(true);
       }
     } else if (state.phase === 'break') {
@@ -110,19 +108,15 @@ export default function LocalMusicPlayer() {
         setActiveQueue('break');
         loadTrack(0, 'break', true);
       } else {
-        audioRef.current?.play().catch(console.warn);
         setIsPlaying(true);
       }
     } else if (state.phase === 'paused') {
-      audioRef.current?.pause();
       setIsPlaying(false);
     } else if (state.phase === 'idle' || state.phase === 'completed') {
-      audioRef.current?.pause();
       setIsPlaying(false);
-      // Optional: reset queue arrays or just leave them initialized
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.phase]); // Only strictly track phase!
+  }, [state.phase]);
 
   // Handler for file uploads locally
   const handleUpload = (e: ChangeEvent<HTMLInputElement>, queueType: 'focus' | 'break') => {
@@ -134,23 +128,18 @@ export default function LocalMusicPlayer() {
 
     // Initial preload mapping
     if (files.length > 0 && queueType === activeQueue && state.phase === 'idle') {
-       const newUrl = URL.createObjectURL(files[0]);
-       if (currentObjectURL) URL.revokeObjectURL(currentObjectURL);
-       setCurrentObjectURL(newUrl);
-       if (audioRef.current) audioRef.current.src = newUrl;
        setCurrentIndex(0);
+       setIsPlaying(false);
     }
   };
 
   // Trigger when a song naturally finishes
   const onEnded = () => {
     if (loop && !shuffle) {
-      // Loop entire array sequentially if on
       handleNext();
     } else if (shuffle) {
       handleNext();
     } else {
-      // Just stop if we reached the end of the array and loop is false natively
       if (currentIndex < currentArray.length - 1) {
         handleNext();
       } else {
@@ -160,14 +149,8 @@ export default function LocalMusicPlayer() {
   };
 
   const manualTogglePlay = () => {
-    if (!audioRef.current || !currentObjectURL) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play().catch(console.warn);
-      setIsPlaying(true);
-    }
+    if (!currentFile) return;
+    setIsPlaying(!isPlaying);
   };
 
   return (
@@ -207,7 +190,7 @@ export default function LocalMusicPlayer() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Track Label */}
         <div style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', background: 'var(--panel-bg)', padding: '6px 12px', borderRadius: 4 }}>
-           {currentObjectURL && currentArray.length > 0 ? currentArray[currentIndex].name : 'No media loaded locally'}
+           {currentFile ? currentFile.name : 'No media loaded locally'}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>

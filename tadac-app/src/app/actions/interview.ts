@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { withErrorHandling, Errors, assertDateString } from '@/lib/errors';
 import { todayDate } from '@/lib/date';
 import type { Prisma } from '@prisma/client';
+import { ensureStaticData } from '@/lib/bootstrap';
 
 import { ensureDefaultUser, DEFAULT_USER_ID } from '@/lib/user';
 const TIMEZONE        = 'Asia/Kolkata';
@@ -35,6 +36,7 @@ function shuffleArray<T>(array: T[], seedStr: string): T[] {
 
 export async function getDailyQuestions() {
   return withErrorHandling(async () => {
+    await ensureStaticData();
     const today = todayDate(TIMEZONE);
     
     // 1. Get questions ALREADY attempted today
