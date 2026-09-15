@@ -6,7 +6,7 @@ import { withErrorHandling, Errors } from '@/lib/errors';
 import type { Prisma } from '@prisma/client';
 import type { StageStatus } from '@/types/domain';
 
-const DEFAULT_USER_ID = 'user_default';
+import { ensureDefaultUser, DEFAULT_USER_ID } from '@/lib/user';
 const STAGE_XP_REWARD = 50;
 
 /**
@@ -63,6 +63,8 @@ export async function getProjectDetails(projectId: string) {
  */
 export async function updateStageProgress(projectId: string, stageId: string, status: StageStatus) {
   return withErrorHandling(async () => {
+    await ensureDefaultUser();
+
     // 1. Verify existence + project matching
     const project = await prisma.project.findUnique({ where: { id: projectId } });
     const stage = await prisma.projectStage.findUnique({ where: { id: stageId } });

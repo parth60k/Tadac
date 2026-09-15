@@ -6,7 +6,7 @@ import { withErrorHandling, assertDateString } from '@/lib/errors';
 import { todayDate, addDays } from '@/lib/date';
 import type { Prisma } from '@prisma/client';
 
-const DEFAULT_USER_ID = 'user_default';
+import { ensureDefaultUser, DEFAULT_USER_ID } from '@/lib/user';
 const TIMEZONE        = 'Asia/Kolkata';
 const JOURNAL_XP      = 10;
 
@@ -111,6 +111,8 @@ export async function submitJournalEntry(data: JournalInput) {
     // Filter empties
     const validPriorities = data.tomorrowPriorities.filter(t => t.trim().length > 0);
     const validExtras     = data.tomorrowExtras.filter(t => t.trim().length > 0);
+
+    await ensureDefaultUser();
 
     const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 1. Upsert Journal

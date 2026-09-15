@@ -6,9 +6,7 @@ import { Errors, withErrorHandling, assertDateString } from '@/lib/errors';
 import { todayDate } from '@/lib/date';
 import type { Priority, Category } from '@/types/domain';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const DEFAULT_USER_ID = 'user_default';
+import { ensureDefaultUser, DEFAULT_USER_ID } from '@/lib/user';
 
 // ─── Get tasks for a specific date ───────────────────────────────────────────
 
@@ -50,6 +48,8 @@ export async function createTask(data: {
     if (!data.title.trim()) throw Errors.validation('Task title is required.');
     assertDateString(data.scheduledDate, 'scheduledDate');
     if (data.deadline) assertDateString(data.deadline, 'deadline');
+
+    await ensureDefaultUser();
 
     // Determine next sortOrder for this date
     const last = await prisma.task.findFirst({

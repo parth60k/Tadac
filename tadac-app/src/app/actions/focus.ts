@@ -6,7 +6,7 @@ import { withErrorHandling, Errors } from '@/lib/errors';
 import { todayDate } from '@/lib/date';
 import type { FocusPreset, Category } from '@/types/domain';
 
-const DEFAULT_USER_ID = 'user_default';
+import { ensureDefaultUser, DEFAULT_USER_ID } from '@/lib/user';
 
 // ─── Start a new focus session ────────────────────────────────────────────────
 
@@ -18,6 +18,8 @@ export async function startFocusSession(data: {
   taskId?:     string;
 }) {
   return withErrorHandling(async () => {
+    await ensureDefaultUser();
+
     // Abandon any lingering 'active' sessions before starting fresh
     await prisma.focusSession.updateMany({
       where:  { userId: DEFAULT_USER_ID, status: 'active' },

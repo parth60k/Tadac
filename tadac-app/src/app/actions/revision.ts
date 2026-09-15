@@ -7,7 +7,7 @@ import { withErrorHandling, Errors, assertDateString } from '@/lib/errors';
 import { todayDate, computeRevisionSchedule, addDays } from '@/lib/date';
 import type { Category } from '@/types/domain';
 
-const DEFAULT_USER_ID = 'user_default';
+import { ensureDefaultUser, DEFAULT_USER_ID } from '@/lib/user';
 const TIMEZONE        = 'Asia/Kolkata';
 
 // ─── Create revision item + 5 checkpoints (idempotent) ───────────────────────
@@ -23,6 +23,8 @@ export async function createRevisionItem(data: {
   return withErrorHandling(async () => {
     if (!data.topic.trim()) throw Errors.validation('Topic is required.');
     assertDateString(data.learnedAt, 'learnedAt');
+
+    await ensureDefaultUser();
 
     const schedule = computeRevisionSchedule(data.learnedAt);
 

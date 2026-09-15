@@ -6,7 +6,7 @@ import { withErrorHandling, Errors, assertDateString } from '@/lib/errors';
 import { todayDate } from '@/lib/date';
 import type { Prisma } from '@prisma/client';
 
-const DEFAULT_USER_ID = 'user_default';
+import { ensureDefaultUser, DEFAULT_USER_ID } from '@/lib/user';
 const TIMEZONE        = 'Asia/Kolkata';
 const DAILY_QUOTA     = 5;
 
@@ -146,6 +146,8 @@ export async function submitInterviewAttempt(questionId: string, userAnswer: str
     });
     if (!question) throw Errors.notFound('Question');
     if (!userAnswer.trim()) throw Errors.validation('Answer cannot be empty');
+
+    await ensureDefaultUser();
 
     // 1. Idempotency Check: Did the user already answer this today?
     const existingAttempt = await prisma.interviewAttempt.findUnique({
