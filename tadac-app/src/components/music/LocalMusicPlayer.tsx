@@ -149,8 +149,18 @@ export default function LocalMusicPlayer() {
   };
 
   const manualTogglePlay = () => {
-    if (!currentFile) return;
-    setIsPlaying(!isPlaying);
+    if (!currentFile || !audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(e => {
+        console.warn('Audio auto-play prevented by browser', e);
+        setIsPlaying(false);
+      });
+    }
   };
 
   return (

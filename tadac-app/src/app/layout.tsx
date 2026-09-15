@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Press_Start_2P } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/lib/theme';
+import { FocusProvider } from '@/lib/focus-context';
 import AppShell from '@/components/layout/AppShell';
 
 const inter = Inter({
@@ -37,9 +38,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${pressStart2P.variable}`}>
       <body>
         <ThemeProvider>
-          <AppShell>
-            {children}
-          </AppShell>
+          <FocusProvider xpPerSession={30}>
+            <AppShell>
+              {children}
+            </AppShell>
+          </FocusProvider>
         </ThemeProvider>
       </body>
     </html>

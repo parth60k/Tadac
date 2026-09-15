@@ -2,7 +2,6 @@
 
 import { Timer, BarChart2 } from 'lucide-react';
 import Panel from '@/components/ui/Panel';
-import { FocusProvider } from '@/lib/focus-context';
 import FocusTimer from '@/components/focus/FocusTimer';
 import FocusControls from '@/components/focus/FocusControls';
 import PresetSelector from '@/components/focus/PresetSelector';
@@ -207,8 +206,6 @@ export default function FocusPageClient({
   tasks:   Task[];
 }) {
   return (
-    <FocusProvider xpPerSession={30}>
-      <FocusLayout summary={summary} tasks={tasks} />
-    </FocusProvider>
+    <FocusLayout summary={summary} tasks={tasks} />
   );
 }

@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { withErrorHandling } from '@/lib/errors';
-import { todayDate, addDays } from '@/lib/date';
+import { todayDate, addDays, toLocalYYYYMMDD } from '@/lib/date';
 
 const DEFAULT_USER_ID = 'user_default';
 
@@ -87,7 +87,7 @@ export async function getProgressSnapshot(timezone: string) {
     const sevenDaysAgoStr = addDays(todayStr, -6); // 7 days inclusive
 
     focusSessions.forEach(f => {
-      const localDateStr = f.createdAt.toLocaleDateString('en-CA', { timeZone: timezone });
+      const localDateStr = toLocalYYYYMMDD(f.createdAt, timezone);
       activeDates.push(localDateStr);
       
       if (localDateStr >= sevenDaysAgoStr && localDateStr <= todayStr) {
@@ -124,7 +124,7 @@ export async function getProgressSnapshot(timezone: string) {
       select: { completedAt: true }
     });
     revisions.forEach(r => {
-       const localDateStr = r.completedAt!.toLocaleDateString('en-CA', { timeZone: timezone });
+       const localDateStr = toLocalYYYYMMDD(r.completedAt!, timezone);
        activeDates.push(localDateStr);
     });
 
