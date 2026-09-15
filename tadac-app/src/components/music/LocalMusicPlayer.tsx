@@ -51,9 +51,19 @@ export default function LocalMusicPlayer() {
     }
   }, [volume]);
 
-  // Note: We deliberately removed the [isPlaying] auto-play useEffect cascade here. 
-  // manualTogglePlay and track loading logic strictly handle the actual audio play 
-  // invocations natively, preventing detached promise rejections.
+  // Safely sync playback state when it changes from external sources (Pomodoro phase) 
+  // explicitly preventing double-invocation if already handled natively.
+  useEffect(() => {
+    if (!audioRef.current || !currentFile) return;
+    if (isPlaying && audioRef.current.paused) {
+      audioRef.current.play().catch(e => {
+         console.warn('[MusicDiagnostics] Lifecycle auto-play prevented', e);
+         setIsPlaying(false);
+      });
+    } else if (!isPlaying && !audioRef.current.paused) {
+      audioRef.current.pause();
+    }
+  }, [isPlaying, currentFile]);
 
   const loadTrack = (idx: number, queueTarget: typeof activeQueue, forcePlay = false) => {
     const queue = queueTarget === 'focus' ? focusFiles : breakFiles;

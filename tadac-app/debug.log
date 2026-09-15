@@ -1,0 +1,15 @@
+BROWSER_CONSOLE: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+BROWSER_CONSOLE: [HMR] connected
+--- TEST A: BEFORE UPLOAD ---
+--- TEST B: AFTER UPLOAD ---
+BROWSER_CONSOLE: [MusicDiagnostics] Uploaded 1 files to focus.
+BROWSER_CONSOLE: [MusicDiagnostics] Accepted 1 valid audio files.
+BROWSER_CONSOLE: Audio auto-play prevented by browser NotSupportedError: Failed to load because no supported source was found.
+Playing AFTER UPLOAD
+BROWSER_CONSOLE: [MusicDiagnostics] manualTogglePlay triggered. Current state isPlaying: false
+BROWSER_CONSOLE: [MusicDiagnostics] Audio auto-play prevented by browser NotSupportedError: The element has no supported sources.
+Audio State: {"src":"blob:http://localhost:3000/0b2b09f5-a071-454d-a46d-07e9d3c79745","paused":true,"readyState":0,"error":"PipelineStatus::DEMUXER_ERROR_COULD_NOT_OPEN: FFmpegDemuxer: open context failed"}
+--- TEST C: SAME FILE ---
+BROWSER_CONSOLE: [MusicDiagnostics] Uploaded 1 files to focus.
+BROWSER_CONSOLE: [MusicDiagnostics] Accepted 1 valid audio files.
+Uploaded same file again.
