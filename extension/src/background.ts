@@ -6,7 +6,7 @@ import type { ExtMessageType } from '../../tadac-app/src/lib/bridge';
 // Global state holding the latest payload from Tadac web app relay
 let latestFocusState: any = null;
 
-const tadacOrigins = ["*://localhost/*", "*://tadac.app/*"];
+const tadacOrigins = ["*://localhost/*", "*://tadac.app/*", "*://*.vercel.app/*"];
 
 chrome.runtime.onMessage.addListener((message: ExtMessageType, _sender, sendResponse) => {
   if (message.type === 'TADAC_STATE_SYNC') {

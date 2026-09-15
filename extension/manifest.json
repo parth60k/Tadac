@@ -19,7 +19,8 @@
     {
       "matches": [
         "http://localhost:3000/*",
-        "https://tadac.app/*"
+        "https://tadac.app/*",
+        "https://*.vercel.app/*"
       ],
       "js": ["src/relay.ts"],
       "run_at": "document_start"
@@ -27,6 +28,7 @@
   ],
   "host_permissions": [
     "http://localhost:3000/*",
-    "https://tadac.app/*"
+    "https://tadac.app/*",
+    "https://*.vercel.app/*"
   ]
 }
