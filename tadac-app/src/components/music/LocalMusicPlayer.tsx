@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect, ChangeEvent } from 'react';
+import { createPortal } from 'react-dom';
+import { usePathname } from 'next/navigation';
 import { useFocus } from '@/lib/focus-context';
 import Panel from '@/components/ui/Panel';
 import Button from '@/components/ui/Button';
@@ -41,6 +43,19 @@ export default function LocalMusicPlayer() {
   const [permissionNeeded, setPermissionNeeded] = useState<'granted' | 'prompt' | 'denied'>('granted');
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const pathname = usePathname();
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+
+  // Hook to find the portal target ONLY on the client to avoid SSR hydration mismatches
+  useEffect(() => {
+    if (pathname === '/focus') {
+      const target = document.getElementById('music-player-portal');
+      setPortalTarget(target);
+    } else {
+      setPortalTarget(null);
+    }
+  }, [pathname]);
 
   const getCurrentArray = () => {
     if (activeQueue === 'focus') return focusTracks;
@@ -246,14 +261,16 @@ export default function LocalMusicPlayer() {
 
   const hasAccessAPI = typeof window !== 'undefined' && 'showDirectoryPicker' in window;
 
-  return (
+  const engine = <audio ref={audioRef} onEnded={onEnded} style={{ display: 'none' }} />;
+
+  const ui = (
     <Panel padding="md" style={{ background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <Music size={18} color="var(--accent)" />
         <h2 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)' }}>Music Library</h2>
       </div>
 
-      <audio ref={audioRef} onEnded={onEnded} style={{ display: 'none' }} />
+      {/* Engine is kept globally stable beside the Portal */}
 
       {/* Library Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, maxHeight: 180, overflowY: 'auto' }}>
@@ -348,5 +365,13 @@ export default function LocalMusicPlayer() {
       </div>
 
     </Panel>
+  );
+
+  return (
+    <>
+      {/* Global stable engine node avoids React tearing down HTMLAudioElement across tree shape changes */}
+      {engine}
+      {pathname === '/focus' && portalTarget ? createPortal(ui, portalTarget) : null}
+    </>
   );
 }

@@ -2,6 +2,7 @@
 
 import { Sidebar, BottomNav } from './Sidebar';
 import SceneBackground from './SceneBackground';
+import LocalMusicPlayer from '@/components/music/LocalMusicPlayer';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -26,6 +27,9 @@ export default function AppShell({ children }: AppShellProps) {
 
       {/* Layer 2b: Mobile bottom nav */}
       <BottomNav />
+
+      {/* Global persisting Music Engine */}
+      <LocalMusicPlayer />
     </>
   );
 }

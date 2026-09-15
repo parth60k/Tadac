@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Plus, BookOpen, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
 import Panel from '@/components/ui/Panel';
 import Button from '@/components/ui/Button';
@@ -81,6 +82,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
 // ─── Main client ──────────────────────────────────────────────────────────────
 
 export default function RevisionPageClient({ data }: { data: PageData }) {
+  const router = useRouter();
   const { items, today } = data;
 
   const [showForm, setShowForm]     = useState(false);
@@ -122,8 +124,8 @@ export default function RevisionPageClient({ data }: { data: PageData }) {
     // Server component will revalidate via server action — just close the panel
     setSelected(null);
     setShowForm(false);
-    // Trigger a soft refresh
-    window.location.reload();
+    // Trigger a soft refresh with Next.js router
+    router.refresh();
   }
 
   if (items.length === 0) {
