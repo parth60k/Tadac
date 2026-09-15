@@ -74,6 +74,9 @@ chrome.runtime.onMessage.addListener((message: ExtMessageType, _sender, sendResp
   }
 });
 
+// @ts-ignore
+import contentScriptUrl from './content?script';
+
 // User explicit toggling for injecting HUD onto Active Tab
 chrome.action.onClicked.addListener(async (tab) => {
   if (!tab.id) return;
@@ -94,7 +97,7 @@ chrome.action.onClicked.addListener(async (tab) => {
       // Inject CSS + Script strictly mapped via MV3 execution
       await chrome.scripting.executeScript({
          target: { tabId: tab.id },
-         files: ['src/content.tsx']
+         files: [contentScriptUrl]
       });
     }
   } catch (error) {
